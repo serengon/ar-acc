@@ -1,50 +1,83 @@
-# Contributing to BR/ACC Open Graph
+# Contribuir a ar/acc
 
-Language: **English** | [Português (Brasil)](docs/pt-BR/CONTRIBUTING.md)
+Gracias por querer mejorar ar/acc.
 
-Thanks for helping improve BR/ACC Open Graph.
+## Reglas base
 
-## Ground Rules
+- Mantené los cambios alineados con el objetivo de transparencia cívica.
+- No agregues secretos, credenciales ni datos de infraestructura privada.
+- Respetá los defaults de privacidad y las restricciones legales (Ley 25.326).
 
-- Keep changes aligned with public-interest transparency goals.
-- Do not add secrets, credentials, or private infrastructure details.
-- Respect public-safe defaults and privacy/legal constraints.
-
-## Development Setup
+## Setup
 
 ```bash
+# 1. Cloná y configurá hooks
+git clone https://github.com/serengon/ar-acc.git
+cd ar-acc
+make setup-hooks
+
+# 2. Instalá dependencias
 cd api && uv sync --dev
 cd ../etl && uv sync --dev
 cd ../frontend && npm install
 ```
 
-## Security and environment
+## Git Flow
 
-- **Frontend env:** Only `VITE_*` variables are exposed in the client bundle. Do not put secrets in `VITE_*`; use them only for public config (e.g. `VITE_API_URL`, `VITE_PUBLIC_MODE`).
-- **Auth:** Keep tokens in memory or HttpOnly cookies only; do not persist JWT in `localStorage` or `sessionStorage`.
-- **Releases:** Before releases, run `npm audit` in `frontend/` and address high/critical findings.
+**Leé [GIT_FLOW.md](GIT_FLOW.md) para el flujo completo.**
 
-## Quality Checks
+Resumen rápido:
 
-Run these before opening a pull request:
+```bash
+# Partí de develop
+git checkout develop && git pull
+git checkout -b feature/pipeline-comprar
+
+# Trabajá con conventional commits
+git commit -m "feat(etl): implement comprar extract"
+
+# PR a develop
+git push -u origin feature/pipeline-comprar
+```
+
+Los hooks locales validan:
+- No commits directos a `main`
+- Formato Conventional Commits
+- No force push a branches protegidos
+
+## Seguridad y entorno
+
+- **Frontend env:** Solo variables `VITE_*` se exponen al cliente. No pongas secretos ahí.
+- **Auth:** Tokens en memoria o HttpOnly cookies. No uses `localStorage`.
+- **Releases:** Corré `npm audit` en `frontend/` antes de releases.
+
+## Checks de calidad
+
+Corré antes de abrir un PR:
 
 ```bash
 make check
-make neutrality
 ```
 
-## Pull Request Expectations
+## Cómo implementar un pipeline
 
-- Keep PR scope focused and explain the user impact.
-- Include tests for behavior changes.
-- Update docs when interfaces or workflows change.
-- Ensure all required CI and security checks are green.
+1. Elegí un pipeline STUB de `etl/src/aracc_etl/pipelines/`
+2. Implementá `extract()`, `transform()`, `load()` siguiendo el patrón de `base.py`
+3. Agregá tests en `etl/tests/test_{pipeline}_pipeline.py`
+4. Agregá fixtures de ejemplo en `etl/tests/fixtures/`
+5. Abrí PR a `develop` con conventional commits
 
-## AI-Assisted Contributions
+## Pull Requests
 
-AI-assisted contributions are allowed.  
-Human contributors remain responsible for:
+- Scope acotado, explicá el impacto.
+- Incluí tests para cambios de comportamiento.
+- Actualizá docs si cambian interfaces o workflows.
+- CI en verde antes de pedir review.
 
-- technical correctness,
-- security/privacy compliance,
-- and final review/sign-off before merge.
+## Contribuciones con IA
+
+Las contribuciones asistidas por IA son bienvenidas.
+El contribuyente humano es responsable de:
+- Corrección técnica
+- Compliance de seguridad/privacidad
+- Review final antes del merge

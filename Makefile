@@ -1,8 +1,14 @@
-.PHONY: dev stop api etl frontend lint type-check test test-api test-etl test-frontend check seed clean
+.PHONY: dev stop api etl frontend lint type-check test test-api test-etl test-frontend check seed clean setup-hooks
 
-# ── Development ─────────────────────────────────────────
+# ── Setup ──────────────────────────────────────────────
+setup-hooks:
+	git config core.hooksPath .githooks
+	@echo "Git hooks activados (.githooks/)"
+
 setup-env:
 	bash scripts/init_env.sh
+
+# ── Development ─────────────────────────────────────────
 
 dev:
 	docker compose up -d

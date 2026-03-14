@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# ar/acc git-flow hook: prevent force pushes to protected branches
+# and validate branch naming convention.
+# Install with: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# ── Block force push to protected branches ──
+PROTECTED_BRANCHES="main develop"
+while read -r local_ref local_sha remote_ref remote_sha; do
+  for protected in $PROTECTED_BRANCHES; do
+    if echo "$remote_ref" | grep -q "refs/heads/$protected"; then
+      if [ "$BRANCH" != "$protected" ]; then
+        continue
+      fi
+      # Check if this is a force push (non-fast-forward)
+      if [ "$remote_sha" != "0000000000000000000000000000000000000000" ]; then
+        merge_base=$(git merge-base "$local_sha" "$remote_sha" 2>/dev/null || true)
+        if [ "$merge_base" != "$remote_sha" ]; then
+          echo ""
+          echo "  ERROR: Force push a '$protected' no permitido."
+          echo ""
+          exit 1
+        fi
+      fi
+    fi
+  done
+done
+
+# ── Validate branch naming convention ──
+VALID_PATTERN="^(main|develop|feature\/[a-z0-9._-]+|hotfix\/[a-z0-9._-]+|release\/[0-9]+\.[0-9]+(\.[0-9]+)?)$"
+
+if ! echo "$BRANCH" | grep -qE "$VALID_PATTERN"; then
+  echo ""
+  echo "  WARNING: El nombre de branch '$BRANCH' no sigue la convención."
+  echo ""
+  echo "  Convención de nombres:"
+  echo "    feature/pipeline-comprar"
+  echo "    feature/api-new-endpoint"
+  echo "    hotfix/fix-cuit-validation"
+  echo "    release/1.0.0"
+  echo ""
+  echo "  Push permitido, pero considerá renombrar."
+  echo ""
+fi

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# ar/acc git-flow hook: enforce conventional commit messages.
+# Format: type(scope): description
+# Types: feat, fix, docs, style, refactor, test, chore, ci, perf, build
+# Install with: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(head -1 "$COMMIT_MSG_FILE")
+
+# Allow merge commits
+if echo "$COMMIT_MSG" | grep -qE "^Merge "; then
+  exit 0
+fi
+
+# Conventional commit pattern
+PATTERN="^(feat|fix|docs|style|refactor|test|chore|ci|perf|build)(\(.+\))?: .{3,}"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo ""
+  echo "  ERROR: El mensaje de commit no sigue el formato Conventional Commits."
+  echo ""
+  echo "  Formato: tipo(alcance): descripción"
+  echo ""
+  echo "  Tipos válidos:"
+  echo "    feat     — nueva funcionalidad"
+  echo "    fix      — corrección de bug"
+  echo "    docs     — documentación"
+  echo "    style    — formato, sin cambio de lógica"
+  echo "    refactor — refactoreo sin cambio funcional"
+  echo "    test     — agregar o modificar tests"
+  echo "    chore    — tareas de mantenimiento"
+  echo "    ci       — cambios en CI/CD"
+  echo "    perf     — mejoras de performance"
+  echo "    build    — cambios en build/deps"
+  echo ""
+  echo "  Ejemplos:"
+  echo "    feat(etl): implement comprar pipeline extract"
+  echo "    fix(api): handle null CUIT in entity lookup"
+  echo "    docs: update EQUIVALENCIAS with new sources"
+  echo ""
+  echo "  Tu mensaje: '$COMMIT_MSG'"
+  echo ""
+  exit 1
+fi

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# ar/acc git-flow hook: prevent direct commits to protected branches.
+# Install with: git config core.hooksPath .githooks
+# Or run: make setup-hooks
+
+set -euo pipefail
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+PROTECTED_BRANCHES="main"
+
+for protected in $PROTECTED_BRANCHES; do
+  if [ "$BRANCH" = "$protected" ]; then
+    echo ""
+    echo "  ERROR: No se permiten commits directos a '$protected'."
+    echo ""
+    echo "  Flujo correcto:"
+    echo "    1. git checkout develop"
+    echo "    2. git checkout -b feature/mi-feature"
+    echo "    3. Hacé tus cambios y commits"
+    echo "    4. Abrí un PR a 'develop'"
+    echo ""
+    echo "  Para hotfixes urgentes:"
+    echo "    1. git checkout main"
+    echo "    2. git checkout -b hotfix/descripcion"
+    echo "    3. PR a 'main' y después merge a 'develop'"
+    echo ""
+    exit 1
+  fi
+done
