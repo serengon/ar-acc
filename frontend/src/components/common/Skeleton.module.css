@@ -1,0 +1,28 @@
+.skeleton {
+  background: var(--bg-tertiary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.text {
+  width: 100%;
+  height: 1em;
+  border-radius: var(--radius-sm);
+}
+
+.rect {
+  border-radius: var(--radius-md);
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    background: var(--bg-tertiary);
+  }
+  50% {
+    background: var(--bg-elevated);
+  }
+}

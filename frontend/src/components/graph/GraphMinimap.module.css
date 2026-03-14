@@ -1,0 +1,14 @@
+.minimap {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: #080d09;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  z-index: var(--z-overlay);
+}
+
+.canvas {
+  display: block;
+}

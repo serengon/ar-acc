@@ -1,0 +1,53 @@
+.container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+.node {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.edge {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+  fill: none;
+  animation: drawLine 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node {
+    opacity: 1;
+    animation: none;
+  }
+
+  .edge {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}

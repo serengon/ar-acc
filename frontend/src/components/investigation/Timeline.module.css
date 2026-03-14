@@ -1,0 +1,63 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border-left: 2px solid var(--border);
+  padding-left: var(--space-md);
+  margin-left: var(--space-xs);
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+}
+
+.entry::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--space-md) - 5px);
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.entryAnnotation::before {
+  background: var(--color-finance);
+}
+
+.entryEntity::before {
+  background: var(--color-contract);
+}
+
+.entryText {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.entryDate {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}

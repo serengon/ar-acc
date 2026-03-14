@@ -1,0 +1,22 @@
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.graphContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: #060a07;
+  background-image:
+    linear-gradient(rgba(148, 163, 154, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 154, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.graphContainer canvas {
+  display: block;
+}

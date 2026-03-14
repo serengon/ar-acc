@@ -1,0 +1,50 @@
+.statusBar {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-sm);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  gap: var(--space-md);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  justify-content: center;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connected {
+  background: var(--color-success);
+}
+
+.disconnected {
+  background: var(--color-danger);
+}
+
+.stat {
+  color: var(--text-secondary);
+}

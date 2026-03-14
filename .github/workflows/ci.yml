@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PRODUCT_TIER: community
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-api-${{ hashFiles('api/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-api-
+
+      - name: Run quality suite
+        run: ../scripts/ci/python_quality.sh
+
+  etl:
+    name: ETL (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: etl
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-etl-${{ hashFiles('etl/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-etl-
+
+      - name: Run quality suite
+        run: ../scripts/ci/python_quality.sh
+
+  frontend:
+    name: Frontend (TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Run quality suite
+        run: ../scripts/ci/frontend_quality.sh
+
+  neutrality:
+    name: Neutrality Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for banned words
+        run: |
+          ! grep -rn \
+            "suspicious\|corrupt\|criminal\|fraudulent\|illegal\|guilty" \
+            api/src/ etl/src/ frontend/src/ \
+            --include="*.py" --include="*.ts" --include="*.tsx" --include="*.json" \
+            || (echo "NEUTRALITY VIOLATION: banned words found in source" && exit 1)
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [api, etl]
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_INTEGRATION_TESTS == 'true'
+    services:
+      neo4j:
+        image: neo4j:5-community
+        env:
+          NEO4J_AUTH: neo4j/testpassword
+        ports:
+          - 7687:7687
+          - 7474:7474
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p testpassword 'RETURN 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-integration-${{ hashFiles('api/uv.lock', 'etl/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-integration-
+
+      - name: API integration tests
+        run: cd api && uv sync --extra dev && uv run pytest -m integration
+        env:
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_PASSWORD: testpassword
+
+      - name: ETL integration tests
+        run: cd etl && uv sync --extra dev && uv run pytest -m integration
+        env:
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_PASSWORD: testpassword

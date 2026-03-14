@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Neo4j
+neo4j/data/
+neo4j/logs/
+neo4j/plugins/
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data files (too large for git)
+*.csv
+!docs/source_registry_br_v1.csv
+!docs/release/public_boundary_matrix.csv
+*.tsv
+*.parquet
+*.dbc
+*.zip
+*.gz
+!etl/tests/fixtures/**/*.csv
+
+# CNPJ data directories (keep .gitkeep only)
+data/cnpj/raw/*
+data/cnpj/extracted/*
+data/cnpj/reference/*
+!data/cnpj/**/.gitkeep
+
+# Audit artifacts
+audit-results/
+scripts/audit-prompts/
+
+# Screenshots and images (large binary files)
+*.png
+!docs/brand/wtg-header.png
+
+# Local report artifacts in repository root
+/*.pdf
+/*.html
+
+# Playwright MCP cache
+.playwright-mcp/
+
+# Claude plans
+.claude/plans/
+
+# Data directories (downloaded datasets)
+data/comprasnet/
+data/rais/
+data/tse/
+
+# Local MCP runtime config (keep example only)
+.mcp.json
+
+# Internal assistant instruction files (must never be published)
+CLAUDE.md
+AGENTS.md
+AGENTS*.md

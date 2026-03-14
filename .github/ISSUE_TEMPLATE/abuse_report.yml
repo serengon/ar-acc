@@ -1,0 +1,42 @@
+name: Abuse Report
+description: Report platform abuse, prohibited use, or harassment patterns.
+title: "[Abuse] "
+labels:
+  - compliance
+  - abuse
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for abuse reports. If there is immediate danger, contact local authorities.
+  - type: input
+    id: abuse_type
+    attributes:
+      label: Abuse type
+      description: e.g. harassment, doxxing attempt, automation abuse, scraping abuse
+      placeholder: abuse category
+    validations:
+      required: true
+  - type: textarea
+    id: incident_details
+    attributes:
+      label: Incident details
+      description: Describe what happened and when.
+      placeholder: incident details
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Include logs, URLs, request IDs, screenshots, and timestamps.
+      placeholder: evidence links
+    validations:
+      required: true
+  - type: checkboxes
+    id: declaration
+    attributes:
+      label: Confirmation
+      options:
+        - label: I confirm this report is submitted in good faith.
+          required: true

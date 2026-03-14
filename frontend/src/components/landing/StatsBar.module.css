@@ -1,0 +1,102 @@
+.bar {
+  position: relative;
+  z-index: 1;
+  width: min(72rem, calc(100% - clamp(2rem, 7vw, 8rem)));
+  margin: -2.4rem auto 0;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1rem, 3vw, 2rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%),
+    #101214;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.9rem;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.separator {
+  width: 1px;
+  height: 2.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.number {
+  font-family: var(--font-mono);
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+  font-weight: 700;
+  color: #f1f4f2;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.suffix {
+  opacity: 0.4;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: rgba(148, 163, 154, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.errorText {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: rgba(148, 163, 154, 0.7);
+}
+
+.retryBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(232, 237, 233, 0.8);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 0.5rem;
+  margin-left: var(--space-sm);
+  transition: background var(--transition-fast);
+}
+
+.retryBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 40rem) {
+  .bar {
+    width: calc(100% - 1.6rem);
+    margin-top: -1.6rem;
+  }
+
+  .inner {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  .number {
+    font-size: clamp(1.15rem, 5vw, 1.4rem);
+  }
+}

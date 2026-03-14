@@ -1,0 +1,42 @@
+name: Privacy Request
+description: Request privacy review for data handling or exposure concerns.
+title: "[Privacy] "
+labels:
+  - compliance
+  - privacy
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report privacy concerns. Do not include unnecessary personal data.
+  - type: input
+    id: requester_role
+    attributes:
+      label: Requester role
+      description: e.g. data subject, journalist, legal representative
+      placeholder: role
+    validations:
+      required: true
+  - type: textarea
+    id: concern_summary
+    attributes:
+      label: Concern summary
+      description: Describe the concern and affected surface.
+      placeholder: summary
+    validations:
+      required: true
+  - type: textarea
+    id: evidence_links
+    attributes:
+      label: Evidence and references
+      description: Provide links, record IDs, and context.
+      placeholder: links and identifiers
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestations
+    attributes:
+      label: Confirmation
+      options:
+        - label: I understand this request may require identity and evidence validation.
+          required: true

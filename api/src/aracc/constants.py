@@ -1,0 +1,16 @@
+PEP_ROLES: frozenset[str] = frozenset({
+    "deputado",
+    "deputada",
+    "senador",
+    "senadora",
+    "vereador",
+    "vereadora",
+    "prefeito",
+    "prefeita",
+    "governador",
+    "governadora",
+    "presidente",
+    "presidenta",
+    "ministro",
+    "ministra",
+})

@@ -1,0 +1,17 @@
+.badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.solid {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.dashed {
+  border: 1px dashed var(--text-muted);
+}

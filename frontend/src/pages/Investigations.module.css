@@ -1,0 +1,25 @@
+.page {
+  display: flex;
+  gap: var(--space-md);
+  height: 100%;
+  padding: var(--space-lg);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .page {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .content {
+    width: 100%;
+  }
+}

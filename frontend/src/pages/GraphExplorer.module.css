@@ -1,0 +1,48 @@
+.explorer {
+  height: calc(100vh - 72px);
+  overflow: hidden;
+}
+
+.resizeHandle {
+  width: 1px;
+  background: var(--border);
+  transition: background var(--transition-fast);
+  cursor: col-resize;
+}
+
+.resizeHandle:hover {
+  background: var(--border-hover);
+}
+
+.canvasArea {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-overlay);
+  z-index: 10;
+}
+
+.status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.detailPanel {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+}

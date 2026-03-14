@@ -1,0 +1,292 @@
+/* === IBM Plex Sans — UI chrome === */
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/IBMPlexSans-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/IBMPlexSans-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/IBMPlexSans-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/IBMPlexSans-Bold.woff2") format("woff2");
+}
+
+/* === IBM Plex Mono — data display === */
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/IBMPlexMono-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/IBMPlexMono-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/IBMPlexMono-Bold.woff2") format("woff2");
+}
+
+:root {
+  /* === Backgrounds — deep black-green, night-vision base === */
+  --bg-primary: #060a07;
+  --bg-secondary: #0c1210;
+  --bg-tertiary: #111a16;
+  --bg-elevated: #162018;
+  --bg-surface: #1a2820;
+  --bg-overlay: rgba(0, 0, 0, 0.75);
+
+  /* === Text — high contrast for data readability === */
+  --text-primary: #e8ede9;
+  --text-secondary: #94a39a;
+  --text-muted: #5a6b60;
+
+  /* === Accent — amber/gold (WCAG AA: 5.8:1 on bg-primary) === */
+  --accent: #ff9a3c;
+  --accent-hover: #ffb060;
+  --accent-dim: rgba(255, 154, 60, 0.15);
+
+  /* === System — cyan === */
+  --cyan: #00e5c3;
+  --cyan-dim: rgba(0, 229, 195, 0.1);
+  --cyan-glow: 0 0 12px rgba(0, 229, 195, 0.3);
+
+  /* === Semantic === */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* === Data categorical — 6 colorblind-safe graph colors === */
+  --data-person: #4ea8de;
+  --data-company: #e07a5f;
+  --data-election: #81b29a;
+  --data-contract: #f2cc8f;
+  --data-sanction: #e56b6f;
+  --data-amendment: #b8a9c9;
+
+  /* === Borders === */
+  --border: rgba(255, 255, 255, 0.04);
+  --border-subtle: rgba(255, 255, 255, 0.02);
+  --border-hover: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(0, 229, 195, 0.2);
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(255, 154, 60, 0.1);
+
+  /* === Spacing === */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-5xl: 128px;
+  --space-6xl: 160px;
+
+  /* === Typography === */
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", "Menlo", "Consolas", monospace;
+  --font-size-2xs: 0.625rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 3rem;
+  --font-size-4xl: 4rem;
+
+  /* === Radius === */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* === Glass === */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-hover: rgba(255, 255, 255, 0.2);
+  --gradient-heading: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+
+  /* === Orbs === */
+  --orb-accent: rgba(255, 154, 60, 0.35);
+  --orb-cyan: rgba(0, 229, 195, 0.18);
+  --orb-blue: rgba(59, 130, 246, 0.15);
+
+  /* === Transitions === */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+
+  /* === Focus === */
+  --focus-ring: 0 0 0 2px var(--accent);
+
+  /* === Hover === */
+  --bg-hover: rgba(255, 255, 255, 0.03);
+
+  /* === Military intelligence palette === */
+  --mil-green: #00ff41;
+  --mil-green-dim: rgba(0, 255, 65, 0.08);
+  --mil-amber: #ffb000;
+  --mil-amber-dim: rgba(255, 176, 0, 0.08);
+  --font-size-5xl: 5rem;
+
+  /* === Z-index scale === */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-command: 600;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f5f7f6;
+  --bg-secondary: #edf0ee;
+  --bg-tertiary: #e4e8e5;
+  --bg-elevated: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.3);
+  --text-primary: #1a2820;
+  --text-secondary: #4a5c52;
+  --text-muted: #7a8c82;
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --accent-dim: rgba(217, 119, 6, 0.1);
+  --cyan: #0891b2;
+  --cyan-dim: rgba(8, 145, 178, 0.08);
+  --cyan-glow: 0 0 12px rgba(8, 145, 178, 0.15);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-hover: rgba(0, 0, 0, 0.12);
+  --border-active: rgba(8, 145, 178, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.05);
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-bg-hover: rgba(0, 0, 0, 0.06);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-hover: rgba(0, 0, 0, 0.15);
+  --gradient-heading: linear-gradient(180deg, #1a2820 0%, rgba(26, 40, 32, 0.7) 100%);
+  --orb-accent: rgba(217, 119, 6, 0.15);
+  --orb-cyan: rgba(8, 145, 178, 0.1);
+  --orb-blue: rgba(59, 130, 246, 0.1);
+  --mil-green: #15803d;
+  --mil-green-dim: rgba(21, 128, 61, 0.08);
+  --mil-amber: #b45309;
+  --mil-amber-dim: rgba(180, 83, 9, 0.08);
+  --font-size-5xl: 5rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+code,
+pre,
+kbd,
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* === Reduced motion === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

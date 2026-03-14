@@ -1,0 +1,7 @@
+.disclaimer {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  text-align: center;
+  padding: var(--space-md);
+}

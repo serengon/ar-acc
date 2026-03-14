@@ -1,0 +1,42 @@
+name: Data Correction Request
+description: Request correction for inaccurate, outdated, or mismatched public data.
+title: "[Correction] "
+labels:
+  - compliance
+  - correction
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to request corrections. Provide documentary evidence whenever possible.
+  - type: input
+    id: entity_reference
+    attributes:
+      label: Entity reference
+      description: Company ID, CNPJ, or graph element reference.
+      placeholder: entity reference
+    validations:
+      required: true
+  - type: textarea
+    id: current_value
+    attributes:
+      label: Current value in platform
+      description: What is currently shown and why it is wrong.
+      placeholder: current value
+    validations:
+      required: true
+  - type: textarea
+    id: requested_value
+    attributes:
+      label: Requested correction
+      description: Provide corrected value and source references.
+      placeholder: corrected value + evidence
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I confirm the submitted information is accurate to the best of my knowledge.
+          required: true

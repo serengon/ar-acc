@@ -1,0 +1,162 @@
+/* Product preview in hero right column */
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+}
+
+.frame {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dot:first-child { background: rgba(239, 68, 68, 0.5); }
+.dot:nth-child(2) { background: rgba(234, 179, 8, 0.5); }
+.dot:nth-child(3) { background: rgba(34, 197, 94, 0.5); }
+
+.toolbarLabel {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.canvas {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Nodes --- */
+
+.node {
+  opacity: 0;
+  animation: nodeAppear 0.5s ease forwards;
+}
+
+.nodeLabel {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+  pointer-events: none;
+  opacity: 0;
+  animation: labelAppear 0.4s ease forwards;
+}
+
+.nodeCircle {
+  filter: drop-shadow(0 0 4px var(--glow));
+}
+
+/* --- Edges --- */
+
+.edgeLine {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: edgeDraw 0.8s ease forwards;
+}
+
+/* --- Pulse on primary node --- */
+
+.pulse {
+  animation: nodePulse 3s ease-in-out infinite;
+}
+
+/* --- Keyframes --- */
+
+@keyframes edgeDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes nodeAppear {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes labelAppear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes nodePulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* --- Fade overlay --- */
+
+.fadeOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 80%,
+    rgba(10, 10, 10, 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+  }
+
+  .canvas {
+    height: 220px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .node {
+    opacity: 1;
+    animation: none;
+  }
+
+  .nodeLabel {
+    opacity: 1;
+    animation: none;
+  }
+
+  .edgeLine {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}

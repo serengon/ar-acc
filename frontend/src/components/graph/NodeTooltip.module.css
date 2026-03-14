@@ -1,0 +1,58 @@
+.tooltip {
+  position: absolute;
+  max-width: 240px;
+  padding: 6px 10px;
+  background: rgba(6, 10, 7, 0.92);
+  border: 1px solid rgba(148, 163, 154, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  z-index: var(--z-dropdown);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transform: translateY(-100%);
+  white-space: nowrap;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.type {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+.connections {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}

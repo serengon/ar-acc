@@ -1,0 +1,58 @@
+.panel {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: var(--space-sm) var(--space-md);
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.close {
+  float: right;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.close:hover {
+  color: var(--text-primary);
+}
+
+.type {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--accent);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-sm);
+  margin: 0;
+  font-size: var(--font-size-xs);
+}
+
+.fields dt {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.fields dd {
+  margin: 0;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
