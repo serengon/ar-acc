@@ -4,7 +4,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from neo4j import AsyncSession
 
-from bracc.constants import PEP_ROLES
+from aracc.constants import PEP_ROLES
 from aracc.dependencies import get_session
 from aracc.models.entity import SourceAttribution
 from aracc.models.graph import GraphEdge, GraphNode, GraphResponse

@@ -58,7 +58,7 @@ def _str_to_bool(value: str) -> bool:
 
 
 def _default_registry_path() -> Path:
-    # .../api/src/bracc/services/source_registry.py -> repo root is parents[4]
+    # .../api/src/aracc/services/source_registry.py -> repo root is parents[4]
     return Path(__file__).resolve().parents[4] / "docs" / "source_registry_br_v1.csv"
 
 

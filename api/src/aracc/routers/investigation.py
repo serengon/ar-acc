@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, Response
 from neo4j import AsyncSession
 
-from bracc.constants import PEP_ROLES
+from aracc.constants import PEP_ROLES
 from aracc.dependencies import CurrentUser, get_session
 from aracc.middleware.cpf_masking import mask_formatted_cpf, mask_raw_cpf
 from aracc.models.investigation import (

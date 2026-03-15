@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response, StreamingResponse
 
-from bracc.constants import PEP_ROLES
+from aracc.constants import PEP_ROLES
 
 if TYPE_CHECKING:
     from starlette.middleware.base import RequestResponseEndpoint

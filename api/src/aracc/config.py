@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     rate_limit_auth: str = "300/minute"
     invite_code: str = ""
     cors_origins: str = "http://localhost:3000"
-    auth_cookie_name: str = "bracc_session"
+    auth_cookie_name: str = "aracc_session"
     auth_cookie_secure: bool = False
     auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     trust_proxy_headers: bool = False

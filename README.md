@@ -81,10 +81,10 @@ docker compose up -d --build
 
 Verificar:
 
-- API: http://localhost:8000/health
-- API Docs: http://localhost:8000/docs
-- Frontend: http://localhost:3000
-- Neo4j Browser: http://localhost:7474
+- API: http://localhost:9000/health
+- API Docs: http://localhost:9000/docs
+- Frontend: http://localhost:9100
+- Neo4j Browser: http://localhost:9474
 
 ---
 
