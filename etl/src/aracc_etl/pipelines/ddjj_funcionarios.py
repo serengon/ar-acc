@@ -25,26 +25,26 @@ _TIPO_DJ = {0: "Inicial", 1: "Anual", 2: "Baja"}
 _URLS = {
     "declaraciones": (
         "https://datos.jus.gob.ar/dataset/"
-        "27bb9b2c-521b-406c-bdf9-48c7b012f6ef/resource/"
-        "2d660327-ab9d-4d44-bc1b-75f3cc6e0735/download/"
+        "4680199f-6234-4262-8a2a-8f7993bf784d/resource/"
+        "a331ccb8-5c13-447f-9bd6-d8018a4b8a62/download/"
         "declaraciones-juradas-2024-consolidado-al-20251222.csv"
     ),
     "bienes": (
         "https://datos.jus.gob.ar/dataset/"
-        "27bb9b2c-521b-406c-bdf9-48c7b012f6ef/resource/"
-        "87efdc78-5e6f-4b2b-a589-c81652f2c832/download/"
+        "4680199f-6234-4262-8a2a-8f7993bf784d/resource/"
+        "ffa28585-9adb-473e-9627-0ffe1938d288/download/"
         "declaraciones-juradas-bienes-2024-consolidado-al-20251222.csv"
     ),
     "deudas": (
         "https://datos.jus.gob.ar/dataset/"
-        "27bb9b2c-521b-406c-bdf9-48c7b012f6ef/resource/"
-        "21e7f0a5-6bfe-468c-b115-2d121b23a34e/download/"
+        "4680199f-6234-4262-8a2a-8f7993bf784d/resource/"
+        "dd1c30e2-e773-47fd-ac80-9afaf3f1baa4/download/"
         "declaraciones-juradas-deudas-2024-consolidado-al-20251222.csv"
     ),
     "familia": (
         "https://datos.jus.gob.ar/dataset/"
-        "27bb9b2c-521b-406c-bdf9-48c7b012f6ef/resource/"
-        "9afb8ea4-e66c-4a3e-ae9a-b22d6ccad6be/download/"
+        "4680199f-6234-4262-8a2a-8f7993bf784d/resource/"
+        "aeb174ff-26b5-4586-827f-872afdc52b49/download/"
         "declaraciones-juradas-grupo-familiar-2024-consolidado-al-20251222.csv"
     ),
 }
@@ -142,29 +142,26 @@ class DdjjFuncionariosPipeline(Pipeline):
             )
 
         # --- Persons ---
-        persons_decl = df_decl[["cuit_fmt", "nombres", "apellido"]].copy()
+        persons_decl = df_decl[["cuit_fmt", "funcionario_apellido_nombre"]].copy()
         persons_decl = persons_decl.rename(columns={"cuit_fmt": "cuil"})
-        persons_decl["nombre"] = (
-            persons_decl["apellido"].fillna("") + " " + persons_decl["nombres"].fillna("")
-        ).apply(normalize_name)
+        persons_decl["nombre"] = persons_decl["funcionario_apellido_nombre"].apply(
+            normalize_name
+        )
         persons_decl = persons_decl[["cuil", "nombre"]].drop_duplicates(subset=["cuil"])
         persons_decl["source"] = "ddjj_funcionarios"
         self.df_persons = persons_decl[persons_decl["cuil"].str.len() > 0]
 
         # --- Declarations ---
-        df_decl["dj_id"] = (
-            df_decl["cuit_fmt"] + "_" + df_decl["desde"].fillna("") + "_"
-            + df_decl["periodo_inicio_cierre"].fillna("")
-        )
+        # dj_id already exists in the CSV
         tipo_col = "tipo_declaracion_jurada_id"
-        df_decl["tipo"] = (
-            df_decl[tipo_col].apply(lambda x: _TIPO_DJ.get(int(x), x) if x else None)
+        df_decl["tipo"] = df_decl[tipo_col].apply(
+            lambda x: _TIPO_DJ.get(int(x), x) if x else None
         )
-        df_decl["anio"] = df_decl["desde"].str[:4]
 
         money_cols = [
-            "total_bienes_inicio", "total_bienes_cierre",
-            "total_deudas_cierre", "ingreso_neto_anual",
+            "total_bienes_inicio", "deudas_inicio",
+            "total_bienes_final", "total_deudas_final",
+            "total_ingreso_neto_c1234",
         ]
         for col in money_cols:
             if col in df_decl.columns:
@@ -184,55 +181,48 @@ class DdjjFuncionariosPipeline(Pipeline):
 
         # --- Assets ---
         if not df_bienes.empty:
-            df_bienes["dj_id"] = (
-                df_bienes["cuit_fmt"] + "_" + df_bienes["desde"].fillna("") + "_"
-                + df_bienes["periodo_inicio_cierre"].fillna("")
-            )
+            # dj_id already in CSV; build unique asset_id
             df_bienes["asset_idx"] = df_bienes.groupby("dj_id").cumcount()
             df_bienes["asset_id"] = (
-                df_bienes["dj_id"] + "_A" + df_bienes["asset_idx"].astype(str)
+                df_bienes["dj_id"].astype(str) + "_A" + df_bienes["asset_idx"].astype(str)
             )
-            tipo_col_b = "tipo_bien" if "tipo_bien" in df_bienes.columns else "sub_tipo_bien"
-            desc_col = "descripcion" if "descripcion" in df_bienes.columns else tipo_col_b
             assets = df_bienes[["asset_id", "dj_id"]].copy()
-            assets["tipo"] = df_bienes.get(tipo_col_b, "")
-            assets["descripcion"] = df_bienes.get(desc_col, "")
-            if "valor" in df_bienes.columns:
-                assets["valor"] = pd.to_numeric(df_bienes["valor"], errors="coerce")
-            if "porcentaje_titularidad" in df_bienes.columns:
-                assets["titularidad"] = pd.to_numeric(
-                    df_bienes["porcentaje_titularidad"], errors="coerce"
+            assets["dj_id"] = assets["dj_id"].astype(str)
+            assets["tipo"] = df_bienes.get("bien_tipo", "")
+            assets["descripcion"] = df_bienes.get("bien_descripcion", "")
+            if "bien_importe" in df_bienes.columns:
+                assets["valor"] = pd.to_numeric(
+                    df_bienes["bien_importe"], errors="coerce"
                 )
-            assets["periodo"] = df_bienes["periodo_inicio_cierre"]
+            if "bien_titularidad" in df_bienes.columns:
+                assets["titularidad"] = pd.to_numeric(
+                    df_bienes["bien_titularidad"], errors="coerce"
+                )
+            assets["periodo"] = df_bienes.get("periodo_inicio_cierre", "")
             self.df_assets = assets
         else:
             self.df_assets = pd.DataFrame()
 
         # --- Debts ---
         if not df_deudas.empty:
-            df_deudas["dj_id"] = (
-                df_deudas["cuit_fmt"] + "_" + df_deudas["desde"].fillna("") + "_"
-                + df_deudas["periodo_inicio_cierre"].fillna("")
-            )
+            # dj_id already in CSV
             df_deudas["debt_idx"] = df_deudas.groupby("dj_id").cumcount()
             df_deudas["debt_id"] = (
-                df_deudas["dj_id"] + "_D" + df_deudas["debt_idx"].astype(str)
+                df_deudas["dj_id"].astype(str) + "_D" + df_deudas["debt_idx"].astype(str)
             )
-            tipo_col_d = "tipo_deuda" if "tipo_deuda" in df_deudas.columns else "sub_tipo_deuda"
-            desc_col_d = "descripcion" if "descripcion" in df_deudas.columns else tipo_col_d
             debts = df_deudas[["debt_id", "dj_id"]].copy()
-            debts["tipo"] = df_deudas.get(tipo_col_d, "")
-            debts["descripcion"] = df_deudas.get(desc_col_d, "")
-            if "monto" in df_deudas.columns:
-                debts["monto"] = pd.to_numeric(df_deudas["monto"], errors="coerce")
-            radicacion = (
-                "lugar_radicacion_provincia"
-                if "lugar_radicacion_provincia" in df_deudas.columns
-                else "lugar_radicacion_pais"
-            )
-            if radicacion in df_deudas.columns:
-                debts["radicacion"] = df_deudas[radicacion]
-            debts["periodo"] = df_deudas["periodo_inicio_cierre"]
+            debts["dj_id"] = debts["dj_id"].astype(str)
+            debts["tipo"] = df_deudas.get("deuda_tipo", "")
+            debts["descripcion"] = df_deudas.get("deuda_descripcion", "")
+            if "deuda_importe" in df_deudas.columns:
+                debts["monto"] = pd.to_numeric(
+                    df_deudas["deuda_importe"], errors="coerce"
+                )
+            if "deuda_radicacion_localizacion" in df_deudas.columns:
+                debts["radicacion"] = df_deudas["deuda_radicacion_localizacion"]
+            if "deuda_clasificacion" in df_deudas.columns:
+                debts["clasificacion"] = df_deudas["deuda_clasificacion"]
+            debts["periodo"] = df_deudas.get("periodo_inicio_cierre", "")
             self.df_debts = debts
         else:
             self.df_debts = pd.DataFrame()
@@ -240,16 +230,20 @@ class DdjjFuncionariosPipeline(Pipeline):
         # --- Family ---
         if not df_fam.empty:
             df_fam["funcionario_cuil"] = df_fam["cuit_fmt"]
-            df_fam["familiar_nombre"] = (
-                df_fam["familiar_apellido"].fillna("")
-                + " "
-                + df_fam["familiar_nombres"].fillna("")
-            ).apply(normalize_name)
-            df_fam["vinculo"] = df_fam["vinculo_familiar_tipo"]
+            df_fam["familiar_nombre_norm"] = df_fam["familiar_apellido_nombre"].apply(
+                normalize_name
+            )
+            df_fam["familiar_cuil_fmt"] = df_fam["familiar_cuit"].apply(
+                lambda x: format_cuit(strip_document(x)) if x else ""
+            )
+            df_fam["vinculo"] = df_fam.get("familiar_parentesco", "")
             family = df_fam[[
-                "funcionario_cuil", "familiar_nombre", "familiar_documento",
-                "familiar_tipo_documento", "vinculo",
+                "funcionario_cuil", "familiar_nombre_norm", "familiar_cuil_fmt", "vinculo",
             ]].copy()
+            family = family.rename(columns={
+                "familiar_nombre_norm": "familiar_nombre",
+                "familiar_cuil_fmt": "familiar_cuil",
+            })
             self.df_family = family
         else:
             self.df_family = pd.DataFrame()
@@ -283,9 +277,9 @@ class DdjjFuncionariosPipeline(Pipeline):
             "SET d.anio = row.anio, d.tipo = row.tipo, "
             "    d.organismo = row.organismo, d.cargo = row.cargo, "
             "    d.total_bienes_inicio = row.total_bienes_inicio, "
-            "    d.total_bienes_cierre = row.total_bienes_cierre, "
-            "    d.total_deudas_cierre = row.total_deudas_cierre, "
-            "    d.ingresos = row.ingreso_neto_anual",
+            "    d.total_bienes_final = row.total_bienes_final, "
+            "    d.total_deudas_final = row.total_deudas_final, "
+            "    d.ingresos = row.total_ingreso_neto_c1234",
             decl_rows,
         )
         logger.info("[%s] Loaded %d Declaration nodes", self.name, n)
@@ -390,10 +384,10 @@ class DdjjFuncionariosPipeline(Pipeline):
             n = loader.run_query_with_retry(
                 "UNWIND $rows AS row "
                 "MATCH (p:Person {cuil: row.funcionario_cuil}) "
-                "MERGE (f:Person {nombre: row.familiar_nombre}) "
+                "MERGE (f:Person {cuil: CASE WHEN row.familiar_cuil <> '' "
+                "  THEN row.familiar_cuil ELSE 'FAM_' + row.familiar_nombre END}) "
                 "ON CREATE SET f.source = 'ddjj_funcionarios_familiar', "
-                "    f.documento = row.familiar_documento, "
-                "    f.tipo_documento = row.familiar_tipo_documento "
+                "    f.nombre = row.familiar_nombre "
                 "MERGE (p)-[r:FAMILIAR_DE]->(f) "
                 "SET r.vinculo = row.vinculo",
                 fam_rows,
