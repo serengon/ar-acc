@@ -194,6 +194,9 @@
     "laborMovement": "Movimiento Laboral",
     "legalCase": "Causa Judicial",
     "cpi": "Comisión Investigadora",
+    "declaration": "Declaración Jurada",
+    "declaredasset": "Bien Declarado",
+    "declareddebt": "Deuda Declarada",
     "detail": "Detalle de Entidad"
   },
   "relationship": {
@@ -244,7 +247,12 @@
     "PARTICIPOU_CPI": "Participó en comisión investigadora",
     "CONTRATADO_POR": "Contratado por",
     "CANDIDATO_EN": "Candidato en",
-    "PARTE_PROCESO": "Parte en proceso"
+    "PARTE_PROCESO": "Parte en proceso",
+    "PRESENTO_DDJJ": "Presentó DDJJ",
+    "OCUPA_CARGO": "Ocupa cargo",
+    "FAMILIAR_DE": "Familiar de",
+    "INCLUYE_BIEN": "Incluye bien",
+    "INCLUYE_DEUDA": "Incluye deuda"
   },
   "graph": {
     "depth": "Profundidad",

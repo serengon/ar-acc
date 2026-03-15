@@ -19,8 +19,6 @@ interface EmendasResponse {
 
 const PAGE_SIZE = 50;
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
-
 export function Emendas() {
   const { t } = useTranslation();
   const [data, setData] = useState<EmendasResponse | null>(null);
@@ -34,7 +32,8 @@ export function Emendas() {
     try {
       const skip = currentPage * PAGE_SIZE;
       const res = await fetch(
-        `${API_URL}/api/v1/emendas/?skip=${skip}&limit=${PAGE_SIZE}`,
+        `/api/v1/emendas/?skip=${skip}&limit=${PAGE_SIZE}`,
+        { credentials: "include" },
       );
       if (!res.ok) {
         throw new Error(`Error: ${res.statusText}`);

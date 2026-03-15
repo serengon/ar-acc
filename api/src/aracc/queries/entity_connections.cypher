@@ -2,8 +2,9 @@ MATCH (center)
 WHERE elementId(center) = $entity_id
   AND (center:Person OR center:Partner OR center:Company OR center:Contract OR center:Sanction OR center:Election
        OR center:Amendment OR center:Finance OR center:Embargo OR center:Health OR center:Education
-       OR center:Convenio OR center:LaborStats OR center:PublicOffice)
-OPTIONAL MATCH p=(center)-[:SOCIO_DE|DOOU|CANDIDATO_EM|VENCEU|AUTOR_EMENDA|SANCIONADA|OPERA_UNIDADE|DEVE|RECEBEU_EMPRESTIMO|EMBARGADA|MANTEDORA_DE|BENEFICIOU|GEROU_CONVENIO|SAME_AS|POSSIBLE_SAME_AS*1..4]-(connected)
+       OR center:Convenio OR center:LaborStats OR center:PublicOffice
+       OR center:Declaration OR center:DeclaredAsset OR center:DeclaredDebt)
+OPTIONAL MATCH p=(center)-[:SOCIO_DE|DOOU|CANDIDATO_EM|VENCEU|AUTOR_EMENDA|SANCIONADA|OPERA_UNIDADE|DEVE|RECEBEU_EMPRESTIMO|EMBARGADA|MANTEDORA_DE|BENEFICIOU|GEROU_CONVENIO|SAME_AS|POSSIBLE_SAME_AS|PRESENTO_DDJJ|OCUPA_CARGO|FAMILIAR_DE|INCLUYE_BIEN|INCLUYE_DEUDA*1..4]-(connected)
 WHERE length(p) <= $depth
   AND all(x IN nodes(p) WHERE NOT (x:User OR x:Investigation OR x:Annotation OR x:Tag))
 WITH center, p

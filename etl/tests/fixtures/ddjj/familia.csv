@@ -1,0 +1,4 @@
+ cuit, nombres, apellido, familiar_nombres, familiar_apellido, familiar_tipo_documento, familiar_documento, vinculo_familiar_tipo, actividad_familiar, desde, hasta, periodo_inicio_cierre
+20-12345678-9, JUAN CARLOS, GARCIA, ANA MARIA, PEREZ, DNI, 30555444, Conyuge, Docente, 202401, 202412, I
+27-98765432-1, MARIA ELENA, LOPEZ, ROBERTO, FERNANDEZ, DNI, 28444333, Conyuge, Abogado, 202401, 202412, C
+23-45678901-2, PEDRO ANTONIO, MARTINEZ, LUCIA, MARTINEZ, DNI, 45666777, Hijo/a, Estudiante, 202401, 202412, I
