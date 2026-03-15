@@ -6,7 +6,7 @@ from neo4j import AsyncSession
 
 from aracc.constants import PEP_ROLES
 from aracc.dependencies import CurrentUser, get_session
-from aracc.middleware.cpf_masking import mask_formatted_cpf, mask_raw_cpf
+from aracc.middleware.cuil_masking import mask_formatted_cuil, mask_raw_cuil
 from aracc.models.investigation import (
     Annotation,
     AnnotationCreate,
@@ -305,18 +305,18 @@ async def export_investigation_pdf(
         if record is not None:
             node = record["e"]
             labels = record["entity_labels"]
-            document = str(node.get("cpf", node.get("cnpj", "")))
+            document = str(node.get("cuil", node.get("cuit", "")))
 
-            # CB-SEC-04: Mask non-PEP CPFs in PDF export (middleware only covers JSON)
-            cpf_val = node.get("cpf")
-            if cpf_val and isinstance(cpf_val, str):
+            # CB-SEC-04: Mask non-PEP CUILs in PDF export (middleware only covers JSON)
+            cuil_val = node.get("cuil")
+            if cuil_val and isinstance(cuil_val, str):
                 role = str(node.get("role", node.get("cargo", ""))).lower()
                 is_pep = any(kw in role for kw in PEP_ROLES)
                 if not is_pep:
-                    if "." in document and "-" in document:
-                        document = mask_formatted_cpf(document)
+                    if "-" in document and len(document) == 13:
+                        document = mask_formatted_cuil(document)
                     elif len(document) == 11 and document.isdigit():
-                        document = mask_raw_cpf(document)
+                        document = mask_raw_cuil(document)
 
             entities.append({
                 "name": str(node.get("name", "")),

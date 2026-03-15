@@ -1,4 +1,4 @@
-MATCH (e) WHERE (e.cpf = $id OR e.cnpj = $id
+MATCH (e) WHERE (e.cuil = $id OR e.cuit = $id
             OR e.contract_id = $id OR e.sanction_id = $id
             OR e.amendment_id = $id OR e.cnes_code = $id
             OR e.finance_id = $id OR e.embargo_id = $id

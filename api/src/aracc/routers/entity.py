@@ -29,8 +29,12 @@ from aracc.services.public_guard import (
 
 router = APIRouter(prefix="/api/v1/entity", tags=["entity"])
 
-CPF_PATTERN = re.compile(r"^\d{11}$")
-CNPJ_PATTERN = re.compile(r"^\d{14}$")
+CUIL_PATTERN = re.compile(r"^\d{11}$")
+CUIT_PATTERN = re.compile(r"^\d{11}$")
+
+# Person prefixes: 20, 23, 24, 27; Company prefixes: 30, 33, 34
+_PERSON_PREFIXES = {"20", "23", "24", "27"}
+_COMPANY_PREFIXES = {"30", "33", "34"}
 
 
 def _clean_identifier(raw: str) -> str:
@@ -53,8 +57,8 @@ def _infer_identity_quality(
     if "Partner" in label_set:
         return "partial"
     if "Person" in label_set:
-        cpf = props.get("cpf")
-        if isinstance(cpf, str) and re.match(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$", cpf):
+        cuil = props.get("cuil")
+        if isinstance(cuil, str) and re.match(r"^\d{2}-\d{8}-\d$", cuil):
             return "strong"
         return "unknown"
     return None
@@ -86,31 +90,32 @@ def _node_to_entity(
     )
 
 
-def _format_cpf(digits: str) -> str:
-    """Format an 11-digit string as CPF: 123.456.789-00."""
-    return f"{digits[:3]}.{digits[3:6]}.{digits[6:9]}-{digits[9:]}"
+def _format_cuil(digits: str) -> str:
+    """Format an 11-digit string as CUIL: XX-XXXXXXXX-X."""
+    return f"{digits[:2]}-{digits[2:10]}-{digits[10]}"
 
 
-def _format_cnpj(digits: str) -> str:
-    """Format a 14-digit string as CNPJ: 12.345.678/0001-00."""
-    return f"{digits[:2]}.{digits[2:5]}.{digits[5:8]}/{digits[8:12]}-{digits[12:]}"
+def _format_cuit(digits: str) -> str:
+    """Format an 11-digit string as CUIT: XX-XXXXXXXX-X."""
+    return f"{digits[:2]}-{digits[2:10]}-{digits[10]}"
 
 
-@router.get("/{cpf_or_cnpj}", response_model=EntityResponse)
+@router.get("/{cuil_or_cuit}", response_model=EntityResponse)
 async def get_entity(
-    cpf_or_cnpj: str,
+    cuil_or_cuit: str,
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> EntityResponse:
-    enforce_entity_lookup_policy(cpf_or_cnpj)
-    identifier = _clean_identifier(cpf_or_cnpj)
+    enforce_entity_lookup_policy(cuil_or_cuit)
+    identifier = _clean_identifier(cuil_or_cuit)
 
-    if not CPF_PATTERN.match(identifier) and not CNPJ_PATTERN.match(identifier):
-        raise HTTPException(status_code=400, detail="Invalid CPF or CNPJ format")
+    if not CUIL_PATTERN.match(identifier):
+        raise HTTPException(status_code=400, detail="Formato de CUIL o CUIT invalido")
 
-    if CPF_PATTERN.match(identifier):
-        identifier_formatted = _format_cpf(identifier)
+    prefix = identifier[:2]
+    if prefix in _PERSON_PREFIXES:
+        identifier_formatted = _format_cuil(identifier)
     else:
-        identifier_formatted = _format_cnpj(identifier)
+        identifier_formatted = _format_cuit(identifier)
 
     record = await execute_query_single(
         session,

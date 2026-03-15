@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/graph", tags=["graph"])
 
 _GRAPH_PROPS = {
-    "name", "razao_social", "cnpj", "cpf", "value", "date",
+    "name", "razao_social", "cuit", "cuil", "value", "date",
     "type", "uf", "cargo", "partido",
 }
 
@@ -158,8 +158,8 @@ async def get_graph(
             sources = [SourceAttribution(database=s) for s in source_val]
 
         doc_id = (
-            props.get("cpf")
-            or props.get("cnpj")
+            props.get("cuil")
+            or props.get("cuit")
             or props.get("contract_id")
             or props.get("sanction_id")
             or props.get("amendment_id")

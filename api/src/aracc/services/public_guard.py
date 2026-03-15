@@ -9,14 +9,17 @@ from aracc.config import settings
 PERSON_LABELS = {"Person", "Partner"}
 INTERNAL_LABELS = {"User", "Investigation", "Annotation", "Tag"}
 SENSITIVE_PROP_KEYS = {
-    "cpf",
+    "cuil",
     "doc_partial",
     "doc_raw",
     "masked_doc",
 }
 
-CPF_PATTERN = re.compile(r"^\d{11}$")
-CNPJ_PATTERN = re.compile(r"^\d{14}$")
+CUIL_PATTERN = re.compile(r"^\d{11}$")
+CUIT_PATTERN = re.compile(r"^\d{11}$")
+
+# Person prefixes: 20, 23, 24, 27
+_PERSON_PREFIXES = {"20", "23", "24", "27"}
 
 
 def _clean_identifier(value: str) -> str:
@@ -52,7 +55,7 @@ def sanitize_public_properties(
     return {
         key: value
         for key, value in props.items()
-        if key not in SENSITIVE_PROP_KEYS and "cpf" not in key.lower()
+        if key not in SENSITIVE_PROP_KEYS and "cuil" not in key.lower()
     }
 
 
@@ -61,15 +64,15 @@ def enforce_entity_lookup_policy(raw_identifier: str) -> None:
         return
     enforce_entity_lookup_enabled()
     clean = _clean_identifier(raw_identifier)
-    if CPF_PATTERN.match(clean) and not settings.public_allow_person:
+    if CUIL_PATTERN.match(clean) and clean[:2] in _PERSON_PREFIXES and not settings.public_allow_person:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Person lookup disabled in public mode",
         )
-    if not CNPJ_PATTERN.match(clean) and not CPF_PATTERN.match(clean):
+    if not CUIL_PATTERN.match(clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid CPF or CNPJ format",
+            detail="Formato de CUIL o CUIT invalido",
         )
 
 

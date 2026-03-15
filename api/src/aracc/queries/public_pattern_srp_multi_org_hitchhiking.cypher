@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 MATCH (c)-[:VENCEU]->(ct:Contract)-[:REFERENTE_A]->(b:Bid)
 WHERE b.srp = true
   AND ct.contracting_org IS NOT NULL
@@ -39,7 +39,7 @@ WITH c,
 WHERE size(bid_ids) > 0
   AND size(evidence_refs) > 0
 RETURN 'srp_multi_org_hitchhiking' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(size(bid_ids) + org_touchpoints) AS risk_signal,
        amount_total AS amount_total,

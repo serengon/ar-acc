@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 OPTIONAL MATCH (c)-[:VENCEU]->(contract)
 WITH c, count(DISTINCT contract) AS contract_count
 OPTIONAL MATCH (c)-[:SANCIONADA]->(sanction)
@@ -46,7 +46,7 @@ UNWIND patterns AS p
 WITH c, p, contract_count, sanction_count, debt_count, loan_count, amendment_count
 WHERE p.trigger
 RETURN p.pattern_id AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        contract_count,
        sanction_count,

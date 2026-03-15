@@ -5,7 +5,7 @@ from aracc.models.entity import SourceAttribution
 
 class BaselineMetrics(BaseModel):
     company_name: str
-    company_cnpj: str
+    company_cuit: str
     company_id: str
     contract_count: int
     total_value: float

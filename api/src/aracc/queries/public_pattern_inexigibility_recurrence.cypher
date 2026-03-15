@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 MATCH (c)-[:VENCEU]->(ct:Contract)-[:REFERENTE_A]->(b:Bid)
 WHERE toLower(coalesce(b.modality, '')) CONTAINS 'inexig'
   AND ct.contracting_org IS NOT NULL
@@ -43,7 +43,7 @@ WITH c,
      [x IN contract_ids + bid_ids WHERE x IS NOT NULL AND x <> ''] AS evidence_refs
 WHERE size(evidence_refs) > 0
 RETURN 'inexigibility_recurrence' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(recurring_groups + size(contract_ids)) AS risk_signal,
        amount_total AS amount_total,

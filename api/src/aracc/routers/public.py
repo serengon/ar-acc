@@ -24,16 +24,16 @@ from aracc.services.source_registry import load_source_registry, source_registry
 router = APIRouter(prefix="/api/v1/public", tags=["public"])
 _PUBLIC_PROVIDER = CommunityIntelligenceProvider()
 
-_CPF_KEYS = {"cpf", "doc_partial", "doc_raw"}
-_CNPJ_PATTERN = re.compile(r"^\d{14}$")
+_CUIL_KEYS = {"cuil", "doc_partial", "doc_raw"}
+_CUIT_PATTERN = re.compile(r"^\d{11}$")
 
 
 def _clean_identifier(raw: str) -> str:
     return re.sub(r"[.\-/]", "", raw)
 
 
-def _format_cnpj(digits: str) -> str:
-    return f"{digits[:2]}.{digits[2:5]}.{digits[5:8]}/{digits[8:12]}-{digits[12:]}"
+def _format_cuit(digits: str) -> str:
+    return f"{digits[:2]}-{digits[2:10]}-{digits[10]}"
 
 
 def _slim_props(node_props: dict[str, Any]) -> dict[str, str | float | int | bool | None]:
@@ -84,7 +84,7 @@ async def _resolve_company(
 ) -> tuple[str, str]:
     company_identifier = _clean_identifier(company_ref)
     company_identifier_formatted = (
-        _format_cnpj(company_identifier) if _CNPJ_PATTERN.match(company_identifier) else company_ref
+        _format_cuit(company_identifier) if _CUIT_PATTERN.match(company_identifier) else company_ref
     )
     record = await execute_query_single(
         session,
@@ -100,13 +100,13 @@ async def _resolve_company(
     labels = record["entity_labels"]
     enforce_person_access_policy(labels)
     company = record["c"]
-    cnpj = str(company.get("cnpj", ""))
-    return record["entity_id"], cnpj
+    cuit = str(company.get("cuit", ""))
+    return record["entity_id"], cuit
 
 
-@router.get("/patterns/company/{cnpj_or_id}", response_model=PatternResponse)
+@router.get("/patterns/company/{cuit_or_id}", response_model=PatternResponse)
 async def public_patterns_for_company(
-    cnpj_or_id: str,
+    cuit_or_id: str,
     session: Annotated[AsyncSession, Depends(get_session)],
     lang: Annotated[str, Query()] = "pt",
 ) -> PatternResponse:
@@ -115,7 +115,7 @@ async def public_patterns_for_company(
             status_code=503,
             detail="Pattern engine temporarily unavailable pending validation.",
         )
-    company_id, _company_cnpj = await _resolve_company(session, cnpj_or_id)
+    company_id, _company_cuit = await _resolve_company(session, cuit_or_id)
     patterns = await _PUBLIC_PROVIDER.run_pattern(
         session,
         pattern_id="__all__",
@@ -133,14 +133,14 @@ async def public_graph_for_company(
     session: Annotated[AsyncSession, Depends(get_session)],
     depth: Annotated[int, Query(ge=1, le=3)] = 2,
 ) -> GraphResponse:
-    company_id, company_cnpj = await _resolve_company(session, company_ref)
+    company_id, company_cuit = await _resolve_company(session, company_ref)
     records = await execute_query(
         session,
         "public_graph_company",
         {
             "company_id": company_id,
-            "company_identifier": _clean_identifier(company_cnpj),
-            "company_identifier_formatted": company_cnpj,
+            "company_identifier": _clean_identifier(company_cuit),
+            "company_identifier_formatted": company_cuit,
             "depth": depth,
         },
     )
@@ -165,14 +165,14 @@ async def public_graph_for_company(
         clean_props = {
             key: value
             for key, value in props.items()
-            if key not in _CPF_KEYS
+            if key not in _CUIL_KEYS
         }
         nodes.append(
             GraphNode(
                 id=node_id,
                 label=str(clean_props.get("razao_social", clean_props.get("name", node_id))),
                 type=labels[0].lower() if labels else "unknown",
-                document_id=str(clean_props.get("cnpj", "")) or None,
+                document_id=str(clean_props.get("cuit", "")) or None,
                 properties=_slim_props(clean_props),
                 sources=sources,
                 is_pep=False,

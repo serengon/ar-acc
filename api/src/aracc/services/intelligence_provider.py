@@ -39,9 +39,9 @@ COMMUNITY_PATTERN_QUERIES: dict[str, str] = {
     "inexigibility_recurrence": "public_pattern_inexigibility_recurrence",
 }
 
-_CNPJ_PATTERN = re.compile(r"^\d{14}$")
+_CUIT_PATTERN = re.compile(r"^\d{11}$")
 _PUBLIC_PATTERN_BLOCKLIST = (
-    "cpf",
+    "cuil",
     "doc_",
     "person",
     "partner",
@@ -114,8 +114,8 @@ class IntelligenceProvider(Protocol):
         ...
 
 
-def _format_cnpj(digits: str) -> str:
-    return f"{digits[:2]}.{digits[2:5]}.{digits[5:8]}/{digits[8:12]}-{digits[12:]}"
+def _format_cuit(digits: str) -> str:
+    return f"{digits[:2]}-{digits[2:10]}-{digits[10]}"
 
 
 def _build_pattern_meta(pattern_ids: tuple[str, ...]) -> list[dict[str, str]]:
@@ -295,15 +295,15 @@ class CommunityIntelligenceProvider:
         )
         if by_element is not None and "Company" in by_element["entity_labels"]:
             node = by_element["e"]
-            cnpj = str(node.get("cnpj", "")).strip()
-            digits = re.sub(r"[.\-/]", "", cnpj)
-            if _CNPJ_PATTERN.match(digits):
-                return entity_id, digits, _format_cnpj(digits)
+            cuit = str(node.get("cuit", "")).strip()
+            digits = re.sub(r"[.\-/]", "", cuit)
+            if _CUIT_PATTERN.match(digits):
+                return entity_id, digits, _format_cuit(digits)
 
         identifier = re.sub(r"[.\-/]", "", entity_id)
-        if not _CNPJ_PATTERN.match(identifier):
+        if not _CUIT_PATTERN.match(identifier):
             return None
-        return entity_id, identifier, _format_cnpj(identifier)
+        return entity_id, identifier, _format_cuit(identifier)
 
     async def get_entity_exposure(
         self,

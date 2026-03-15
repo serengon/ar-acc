@@ -204,7 +204,7 @@ async def test_compute_exposure_aggregated_same_as_data() -> None:
     session = AsyncMock()
 
     # Simulates aggregated data: higher connection count and multiple sources
-    # from SAME_AS traversal across TSE candidate + CNPJ person + author nodes
+    # from SAME_AS traversal across TSE candidate + CUIT person + author nodes
     score_record = MagicMock()
     score_record.__getitem__ = lambda self, key: {
         "entity_id": "4:abc:10",
