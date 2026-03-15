@@ -11,7 +11,7 @@ import { PatternResultCard } from "@/components/pattern/PatternResultCard";
 import styles from "./Patterns.module.css";
 
 export function Patterns() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { entityId } = useParams<{ entityId: string }>();
   const navigate = useNavigate();
 
@@ -34,12 +34,12 @@ export function Patterns() {
     }
     setLoading(true);
     setError(null);
-    const lang = i18n.language === "pt-BR" ? "pt" : "en";
+    const lang = "es";
     getEntityPatterns(entityId, lang)
       .then((res) => setResults(res.patterns))
       .catch(() => setError(t("patterns.runError")))
       .finally(() => setLoading(false));
-  }, [entityId, i18n.language, t]);
+  }, [entityId, t]);
 
   const handlePatternClick = useCallback((patternId: string) => {
     setActivePattern((prev) => (prev === patternId ? null : patternId));

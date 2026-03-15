@@ -15,8 +15,8 @@ RUN uv sync --no-dev --no-install-project
 COPY api/src ./src
 RUN uv sync --no-dev
 
-EXPOSE 8000
-CMD ["uv", "run", "uvicorn", "aracc.main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 9000
+CMD ["uv", "run", "uvicorn", "aracc.main:app", "--host", "0.0.0.0", "--port", "9000"]
 
 
 FROM node:22-slim AS frontend-build
@@ -33,7 +33,7 @@ FROM nginx:alpine AS frontend
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 3000
+EXPOSE 9100
 CMD ["nginx", "-g", "daemon off;"]
 
 

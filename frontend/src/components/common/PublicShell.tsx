@@ -7,13 +7,9 @@ import { useAuthStore } from "@/stores/auth";
 import styles from "./PublicShell.module.css";
 
 export function PublicShell() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const token = useAuthStore((s) => s.token);
 
-  const toggleLang = () => {
-    const next = i18n.language === "pt-BR" ? "en" : "pt-BR";
-    i18n.changeLanguage(next);
-  };
 
   return (
     <div className={styles.shell}>
@@ -24,7 +20,7 @@ export function PublicShell() {
         <div className={styles.actions}>
           {IS_PUBLIC_MODE ? (
             <Link to="/app/search" className={styles.registerLink}>
-              Open Explorer
+              {t("landing.cta")}
             </Link>
           ) : !token && (
             <>
@@ -36,13 +32,6 @@ export function PublicShell() {
               </Link>
             </>
           )}
-          <button
-            onClick={toggleLang}
-            className={styles.langToggle}
-            type="button"
-          >
-            {i18n.language === "pt-BR" ? "EN" : "PT"}
-          </button>
         </div>
       </header>
       <main className={styles.content}>

@@ -8,7 +8,7 @@ make bootstrap-demo
 ```
 
 Expected results:
-- `http://localhost:8000/health` returns `{"status":"ok"}`.
+- `http://localhost:9000/health` returns `{"status":"ok"}`.
 - Neo4j Browser is available at `http://localhost:7474`.
 - Demo graph seed is loaded via `infra/scripts/seed-dev.sh`.
 

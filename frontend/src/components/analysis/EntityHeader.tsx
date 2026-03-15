@@ -16,9 +16,9 @@ interface EntityHeaderProps {
 }
 
 function formatMoney(value: number): string {
-  return new Intl.NumberFormat("pt-BR", {
+  return new Intl.NumberFormat("es-AR", {
     style: "currency",
-    currency: "BRL",
+    currency: "ARS",
     notation: "compact",
   }).format(value);
 }

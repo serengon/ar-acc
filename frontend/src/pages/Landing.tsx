@@ -54,19 +54,19 @@ interface SourceDef {
 }
 
 const DATA_SOURCES: SourceDef[] = [
-  { nameKey: "CNPJ", descKey: "landing.sources.cnpj", countFn: (s) => s.company_count },
-  { nameKey: "TSE", descKey: "landing.sources.tse", countFn: (s) => s.person_count },
-  { nameKey: "Transparência", descKey: "landing.sources.transparencia", countFn: (s) => s.contract_count },
-  { nameKey: "CEIS/CNEP", descKey: "landing.sources.sanctions", countFn: (s) => s.sanction_count },
-  { nameKey: "DATASUS", descKey: "landing.sources.cnes", countFn: (s) => s.health_count },
-  { nameKey: "BNDES", descKey: "landing.sources.bndes", countFn: (s) => s.finance_count },
-  { nameKey: "PGFN", descKey: "landing.sources.pgfn", countFn: () => null },
-  { nameKey: "IBAMA", descKey: "landing.sources.ibama", countFn: (s) => s.embargo_count },
-  { nameKey: "ComprasNet", descKey: "landing.sources.comprasnet", countFn: () => null },
-  { nameKey: "TCU", descKey: "landing.sources.tcu", countFn: () => null },
-  { nameKey: "TransfereGov", descKey: "landing.sources.transferegov", countFn: (s) => s.amendment_count },
-  { nameKey: "RAIS", descKey: "landing.sources.rais", countFn: (s) => s.laborstats_count },
-  { nameKey: "INEP", descKey: "landing.sources.inep", countFn: (s) => s.education_count },
+  { nameKey: "AFIP", descKey: "landing.sources.afip", countFn: (s) => s.company_count },
+  { nameKey: "CNE", descKey: "landing.sources.cne", countFn: (s) => s.person_count },
+  { nameKey: "COMPR.AR", descKey: "landing.sources.comprar", countFn: (s) => s.contract_count },
+  { nameKey: "OA", descKey: "landing.sources.oa", countFn: (s) => s.sanction_count },
+  { nameKey: "SISA", descKey: "landing.sources.sisa", countFn: (s) => s.health_count },
+  { nameKey: "BCRA", descKey: "landing.sources.bcra", countFn: (s) => s.finance_count },
+  { nameKey: "IGJ", descKey: "landing.sources.igj", countFn: () => null },
+  { nameKey: "CNV", descKey: "landing.sources.cnv", countFn: () => null },
+  { nameKey: "AGN", descKey: "landing.sources.agn", countFn: () => null },
+  { nameKey: "HCDN", descKey: "landing.sources.hcdn", countFn: (s) => s.amendment_count },
+  { nameKey: "UIF", descKey: "landing.sources.uif", countFn: () => null },
+  { nameKey: "CIJ", descKey: "landing.sources.cij", countFn: () => null },
+  { nameKey: "Presupuesto", descKey: "landing.sources.presupuesto", countFn: () => null },
 ];
 
 interface FeatureDef {
