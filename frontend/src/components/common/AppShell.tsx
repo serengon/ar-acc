@@ -34,7 +34,7 @@ const NAV_ITEMS = [
 ] as const;
 
 export function AppShell() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -85,10 +85,6 @@ export function AppShell() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
 
-  const toggleLang = useCallback(() => {
-    const next = i18n.language === "pt-BR" ? "en" : "pt-BR";
-    i18n.changeLanguage(next);
-  }, [i18n]);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -174,9 +170,6 @@ export function AppShell() {
           )}
           <button className={styles.langToggle} onClick={toggleTheme} title={theme === "dark" ? t("nav.themeLight") : t("nav.themeDark")}>
             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
-          <button className={styles.langToggle} onClick={toggleLang} title={i18n.language === "pt-BR" ? "English" : "Portugues"}>
-            {i18n.language === "pt-BR" ? "EN" : "PT"}
           </button>
           {user && !sidebarCollapsed && (
             <span className={styles.userEmail}>{user.email}</span>

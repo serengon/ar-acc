@@ -67,14 +67,14 @@ fi
 
 echo "Waiting for API health endpoint..."
 for _ in $(seq 1 60); do
-  if curl -fsS http://localhost:8000/health >/dev/null 2>&1; then
+  if curl -fsS http://localhost:9000/health >/dev/null 2>&1; then
     break
   fi
   sleep 2
 done
 
-if ! curl -fsS http://localhost:8000/health >/dev/null 2>&1; then
-  echo "API health check failed at http://localhost:8000/health" >&2
+if ! curl -fsS http://localhost:9000/health >/dev/null 2>&1; then
+  echo "API health check failed at http://localhost:9000/health" >&2
   exit 1
 fi
 
@@ -118,7 +118,7 @@ fi
 seed_nodes="$(docker exec bracc-neo4j cypher-shell -u neo4j -p "$NEO4J_PASSWORD" "MATCH (n) RETURN count(n) AS c" --format plain 2>/dev/null | tail -n 1 | tr -d '[:space:]')"
 
 echo "Bootstrap complete."
-echo "- API: http://localhost:8000/health"
-echo "- Frontend: http://localhost:3000"
+echo "- API: http://localhost:9000/health"
+echo "- Frontend: http://localhost:9100"
 echo "- Neo4j Browser: http://localhost:7474"
 echo "- Current graph node count: ${seed_nodes:-unknown}"

@@ -18,7 +18,7 @@ stop:
 
 # ── API ─────────────────────────────────────────────────
 api:
-	cd api && uv run uvicorn aracc.main:app --reload --host 0.0.0.0 --port 8000
+	cd api && uv run uvicorn aracc.main:app --reload --host 0.0.0.0 --port 9000
 
 # ── ETL ─────────────────────────────────────────────────
 etl:

@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     neo4j_database: str = "neo4j"
 
     api_host: str = "0.0.0.0"
-    api_port: int = 8000
+    api_port: int = 9000
     log_level: str = "info"
     app_env: str = "dev"
 
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     rate_limit_anon: str = "60/minute"
     rate_limit_auth: str = "300/minute"
     invite_code: str = ""
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:9100"
     auth_cookie_name: str = "aracc_session"
     auth_cookie_secure: bool = False
     auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"

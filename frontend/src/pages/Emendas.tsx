@@ -19,7 +19,7 @@ interface EmendasResponse {
 
 const PAGE_SIZE = 50;
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
 export function Emendas() {
   const { t } = useTranslation();
@@ -56,9 +56,9 @@ export function Emendas() {
 
   const formatCurrency = (val: unknown) => {
     const num = typeof val === "number" ? val : 0;
-    return new Intl.NumberFormat("pt-BR", {
+    return new Intl.NumberFormat("es-AR", {
       style: "currency",
-      currency: "BRL",
+      currency: "ARS",
     }).format(num);
   };
 

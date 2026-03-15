@@ -136,7 +136,7 @@ def wait_for_api(timeout_sec: int = 300) -> bool:
     start = time.time()
     while (time.time() - start) < timeout_sec:
         try:
-            with urlopen("http://localhost:8000/health", timeout=5) as response:  # noqa: S310
+            with urlopen("http://localhost:9000/health", timeout=5) as response:  # noqa: S310
                 body = response.read().decode("utf-8")
                 if "ok" in body.lower():
                     return True

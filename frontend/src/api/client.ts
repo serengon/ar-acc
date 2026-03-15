@@ -129,8 +129,10 @@ export interface PatternInfo {
   id: string;
   name_pt: string;
   name_en: string;
+  name_es?: string;
   description_pt: string;
   description_en: string;
+  description_es?: string;
 }
 
 export interface PatternListResponse {
