@@ -64,6 +64,9 @@ const INITIAL_ENTITY_TYPES = new Set([
   "laborMovement",
   "legalCase",
   "cpi",
+  "declaration",
+  "declareddebt",
+  "publicoffice",
 ]);
 
 const INITIAL_REL_TYPES = new Set([
@@ -104,6 +107,11 @@ const INITIAL_REL_TYPES = new Set([
   "SANCIONADA_INTERNACIONALMENTE",
   "UN_SANCTIONED",
   "PARTICIPOU_CPI",
+  "PRESENTO_DDJJ",
+  "OCUPA_CARGO",
+  "FAMILIAR_DE",
+  "INCLUYE_BIEN",
+  "INCLUYE_DEUDA",
 ]);
 
 function initialState() {
