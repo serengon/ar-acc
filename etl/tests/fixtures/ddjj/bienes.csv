@@ -1,0 +1,5 @@
+ cuit, nombres, apellido, tipo_bien, sub_tipo_bien, lugar_radicacion_pais, lugar_radicacion_provincia, descripcion, valor_moneda, valor, porcentaje_titularidad, periodo_inicio_cierre, desde
+20-12345678-9, JUAN CARLOS, GARCIA, Inmueble, Casa habitacion, Argentina, Buenos Aires, Casa en San Isidro, ARS, 25000000.00, 100.0, I, 202401
+20-12345678-9, JUAN CARLOS, GARCIA, Automotor, Automovil, Argentina, Buenos Aires, Toyota Corolla 2022, ARS, 8500000.00, 100.0, I, 202401
+27-98765432-1, MARIA ELENA, LOPEZ, Inmueble, Departamento, Argentina, CABA, Depto en Palermo, ARS, 12000000.00, 50.0, C, 202401
+23-45678901-2, PEDRO ANTONIO, MARTINEZ, Inmueble, Terreno, Argentina, Cordoba, Lote en Villa Allende, ARS, 5500000.00, 100.0, I, 202401
