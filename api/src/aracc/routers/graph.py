@@ -24,7 +24,8 @@ router = APIRouter(prefix="/api/v1/graph", tags=["graph"])
 
 _GRAPH_PROPS = {
     "name", "razao_social", "cuit", "cuil", "value", "date",
-    "type", "uf", "cargo", "partido",
+    "type", "uf", "cargo", "partido", "organismo", "anio", "tipo",
+    "descripcion", "titularidad", "monto", "vinculo",
 }
 
 _DEFAULT_LABEL_FILTER = "-User|-Investigation|-Annotation|-Tag"
@@ -63,6 +64,18 @@ def _extract_label(node: Any, labels: list[str]) -> str:
         return str(props.get("description", props.get("uf", "Embargo")))
     if entity_type == "convenio":
         return str(props.get("object", props.get("convenio_id", "Convenio")))
+    if entity_type == "declaration":
+        cargo = props.get("cargo", "")
+        anio = props.get("anio", "")
+        return f"DDJJ {anio} — {cargo}" if cargo else f"DDJJ {anio}"
+    if entity_type == "declaredasset":
+        return str(props.get("descripcion", props.get("tipo", "Bien")))
+    if entity_type == "declareddebt":
+        return str(props.get("descripcion", props.get("tipo", "Deuda")))
+    if entity_type == "publicoffice":
+        cargo = props.get("cargo", "")
+        org = props.get("organismo", "")
+        return f"{cargo} — {org}" if org else str(cargo)
     return str(props.get("name", str(props.get("id", ""))))
 
 
