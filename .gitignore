@@ -1,3 +1,6 @@
+# Lock files (managed per-component, not versioned)
+uv.lock
+
 # Python
 __pycache__/
 *.py[cod]
