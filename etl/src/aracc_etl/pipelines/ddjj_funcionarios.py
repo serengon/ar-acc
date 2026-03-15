@@ -144,10 +144,10 @@ class DdjjFuncionariosPipeline(Pipeline):
         # --- Persons ---
         persons_decl = df_decl[["cuit_fmt", "funcionario_apellido_nombre"]].copy()
         persons_decl = persons_decl.rename(columns={"cuit_fmt": "cuil"})
-        persons_decl["nombre"] = persons_decl["funcionario_apellido_nombre"].apply(
+        persons_decl["name"] = persons_decl["funcionario_apellido_nombre"].apply(
             normalize_name
         )
-        persons_decl = persons_decl[["cuil", "nombre"]].drop_duplicates(subset=["cuil"])
+        persons_decl = persons_decl[["cuil", "name"]].drop_duplicates(subset=["cuil"])
         persons_decl["source"] = "ddjj_funcionarios"
         self.df_persons = persons_decl[persons_decl["cuil"].str.len() > 0]
 
@@ -387,7 +387,7 @@ class DdjjFuncionariosPipeline(Pipeline):
                 "MERGE (f:Person {cuil: CASE WHEN row.familiar_cuil <> '' "
                 "  THEN row.familiar_cuil ELSE 'FAM_' + row.familiar_nombre END}) "
                 "ON CREATE SET f.source = 'ddjj_funcionarios_familiar', "
-                "    f.nombre = row.familiar_nombre "
+                "    f.name = row.familiar_nombre "
                 "MERGE (p)-[r:FAMILIAR_DE]->(f) "
                 "SET r.vinculo = row.vinculo",
                 fam_rows,

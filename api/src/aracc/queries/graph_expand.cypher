@@ -4,8 +4,9 @@ WHERE elementId(center) = $entity_id
        OR center:Amendment OR center:Finance OR center:Embargo OR center:Health OR center:Education
        OR center:Convenio OR center:LaborStats OR center:PublicOffice
        OR center:OffshoreEntity OR center:OffshoreOfficer OR center:GlobalPEP
-       OR center:CVMProceeding OR center:Expense)
-OPTIONAL MATCH p=(center)-[:SOCIO_DE|DOOU|CANDIDATO_EM|VENCEU|AUTOR_EMENDA|SANCIONADA|OPERA_UNIDADE|DEVE|RECEBEU_EMPRESTIMO|EMBARGADA|MANTEDORA_DE|BENEFICIOU|GEROU_CONVENIO|SAME_AS|POSSIBLY_SAME_AS|OFFICER_OF|INTERMEDIARY_OF|GLOBAL_PEP_MATCH|CVM_SANCIONADA|GASTOU|FORNECEU*1..4]-(n)
+       OR center:CVMProceeding OR center:Expense
+       OR center:Declaration OR center:DeclaredAsset OR center:DeclaredDebt)
+OPTIONAL MATCH p=(center)-[:SOCIO_DE|DOOU|CANDIDATO_EM|VENCEU|AUTOR_EMENDA|SANCIONADA|OPERA_UNIDADE|DEVE|RECEBEU_EMPRESTIMO|EMBARGADA|MANTEDORA_DE|BENEFICIOU|GEROU_CONVENIO|SAME_AS|POSSIBLY_SAME_AS|OFFICER_OF|INTERMEDIARY_OF|GLOBAL_PEP_MATCH|CVM_SANCIONADA|GASTOU|FORNECEU|PRESENTO_DDJJ|OCUPA_CARGO|FAMILIAR_DE|INCLUYE_BIEN|INCLUYE_DEUDA*1..4]-(n)
 WHERE length(p) <= $depth
   AND all(x IN nodes(p) WHERE NOT (x:User OR x:Investigation OR x:Annotation OR x:Tag))
 WITH center, collect(p) AS paths
