@@ -77,6 +77,7 @@ function GraphCanvasInner({
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [selectedEdge, setSelectedEdge] = useState<GraphLinkObject | null>(null);
   const [, setSearchQuery] = useState("");
+  const [engineTick, setEngineTick] = useState(0);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string } | null>(null);
   const zoomRef = useRef(1);
 
@@ -205,7 +206,8 @@ function GraphCanvasInner({
           n.x != null && n.y != null && visibleNodeIds.has(n.id),
         )
         .map((n) => ({ x: n.x, y: n.y, type: n.type })),
-    [graphData, visibleNodeIds],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [graphData, visibleNodeIds, engineTick],
   );
 
   const nodeColor = useCallback((node: GraphNodeObject) => {
@@ -322,18 +324,14 @@ function GraphCanvasInner({
       fittedRef.current = true;
       setTimeout(() => {
         fgRef.current?.zoomToFit(300, 50);
-        // Defer pause until after zoomToFit animation completes
-        setTimeout(() => fgRef.current?.pauseAnimation(), 350);
       }, 200);
-    } else {
-      fgRef.current?.pauseAnimation();
     }
+    setEngineTick((t) => t + 1);
   }, []);
 
   // Cleanup: pause animation on unmount to stop RAF loop surviving navigation
   useEffect(() => {
-    const fg = fgRef.current;
-    return () => { fg?.pauseAnimation(); };
+    return () => { fgRef.current?.pauseAnimation(); };
   }, []);
 
   // Stable canvas render callback — avoids ForceGraph2D re-initializing render pipeline
