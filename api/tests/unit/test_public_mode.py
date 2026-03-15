@@ -61,7 +61,7 @@ async def test_person_lookup_disabled_in_public_mode(
     monkeypatch.setattr(settings, "public_mode", True)
     monkeypatch.setattr(settings, "public_allow_entity_lookup", True)
     monkeypatch.setattr(settings, "public_allow_person", False)
-    response = await client.get("/api/v1/entity/12345678901")
+    response = await client.get("/api/v1/entity/20345678901")
     assert response.status_code == 403
     assert "Person lookup disabled" in response.json()["detail"]
 
@@ -75,18 +75,18 @@ async def test_search_hides_person_nodes_in_public_mode(
     monkeypatch.setattr(settings, "public_allow_person", False)
     mocked_records = [
         {
-            "node": {"name": "Pessoa Teste", "cpf": "12345678900"},
+            "node": {"name": "Pessoa Teste", "cuil": "12345678900"},
             "node_labels": ["Person"],
             "node_id": "p1",
             "score": 3.1,
             "document_id": "12345678900",
         },
         {
-            "node": {"razao_social": "Empresa Teste", "cnpj": "11.111.111/0001-11"},
+            "node": {"razao_social": "Empresa Teste", "cuit": "30-11111111-1"},
             "node_labels": ["Company"],
             "node_id": "c1",
             "score": 2.9,
-            "document_id": "11.111.111/0001-11",
+            "document_id": "30-11111111-1",
         },
     ]
     with patch(
@@ -128,7 +128,7 @@ async def test_public_meta_endpoint(client: AsyncClient) -> None:
 @pytest.mark.anyio
 async def test_public_patterns_company_endpoint(client: AsyncClient) -> None:
     with patch("aracc.routers.public.settings.patterns_enabled", False):
-        response = await client.get("/api/v1/public/patterns/company/11111111000111")
+        response = await client.get("/api/v1/public/patterns/company/30111111111")
     assert response.status_code == 503
     assert "temporarily unavailable" in response.json()["detail"]
 
@@ -141,7 +141,7 @@ async def test_public_patterns_company_endpoint_when_enabled(client: AsyncClient
             "aracc.routers.public.execute_query_single",
             new_callable=AsyncMock,
             return_value={
-                "c": {"cnpj": "11.111.111/0001-11", "razao_social": "Empresa Teste"},
+                "c": {"cuit": "30-11111111-1", "razao_social": "Empresa Teste"},
                 "entity_labels": ["Company"],
                 "entity_id": "c1",
             },
@@ -155,7 +155,7 @@ async def test_public_patterns_company_endpoint_when_enabled(client: AsyncClient
                     pattern_name="Devedor com contratos públicos",
                     description="Coocorrência factual entre dívida ativa e contratos recorrentes",
                     data={
-                        "cnpj": "11.111.111/0001-11",
+                        "cuit": "30-11111111-1",
                         "company_name": "Empresa Teste",
                         "risk_signal": 5.0,
                         "amount_total": 120000.0,
@@ -172,14 +172,14 @@ async def test_public_patterns_company_endpoint_when_enabled(client: AsyncClient
             ],
         ),
     ):
-        response = await client.get("/api/v1/public/patterns/company/11111111000111")
+        response = await client.get("/api/v1/public/patterns/company/30111111111")
     assert response.status_code == 200
     payload = response.json()
     assert payload["total"] == 1
     assert payload["patterns"][0]["exposure_tier"] == "public_safe"
     assert payload["patterns"][0]["data"]["evidence_refs"]
     assert payload["patterns"][0]["data"]["risk_signal"] >= 1
-    assert "cpf" not in str(payload).lower()
+    assert "cuil" not in str(payload).lower()
 
 
 @pytest.mark.anyio
@@ -189,7 +189,7 @@ async def test_public_graph_company_filters_person_nodes(client: AsyncClient) ->
             "aracc.routers.public.execute_query_single",
             new_callable=AsyncMock,
             return_value={
-                "c": {"cnpj": "11.111.111/0001-11", "razao_social": "Empresa Teste"},
+                "c": {"cuit": "30-11111111-1", "razao_social": "Empresa Teste"},
                 "entity_labels": ["Company"],
                 "entity_id": "c1",
             },
@@ -204,9 +204,9 @@ async def test_public_graph_company_filters_person_nodes(client: AsyncClient) ->
                             "c1",
                             ["Company"],
                             razao_social="Empresa Teste",
-                            cnpj="11.111.111/0001-11",
+                            cuit="30-11111111-1",
                         ),
-                        _FakeNode("p1", ["Person"], name="Pessoa Teste", cpf="12345678900"),
+                        _FakeNode("p1", ["Person"], name="Pessoa Teste", cuil="12345678900"),
                     ],
                     "relationships": [
                         _FakeRel("r1", "c1", "p1", "SOCIO_DE", confidence=1.0),
@@ -216,7 +216,7 @@ async def test_public_graph_company_filters_person_nodes(client: AsyncClient) ->
             ],
         ),
     ):
-        response = await client.get("/api/v1/public/graph/company/11111111000111")
+        response = await client.get("/api/v1/public/graph/company/30111111111")
 
     assert response.status_code == 200
     payload = response.json()
@@ -334,7 +334,7 @@ async def test_timeline_sanitizes_properties_in_public_mode(
     mock_records = [
         {
             "lbls": ["Contract"],
-            "props": {"type": "licitacao", "cpf": "12345678900", "value": 50000.0},
+            "props": {"type": "licitacao", "cuil": "12345678900", "value": 50000.0},
             "event_date": "2024-01-15",
             "id": "evt-1",
         },
@@ -350,7 +350,7 @@ async def test_timeline_sanitizes_properties_in_public_mode(
     payload = response.json()
     assert len(payload["events"]) == 1
     event_props = payload["events"][0]["properties"]
-    assert "cpf" not in event_props
+    assert "cuil" not in event_props
     assert event_props["value"] == 50000.0
 
 

@@ -77,7 +77,7 @@ async def test_community_provider_enforces_public_evidence_fields() -> None:
             new_callable=AsyncMock,
             return_value={
                 "entity_labels": ["Company"],
-                "e": {"cnpj": "11.111.111/0001-11"},
+                "e": {"cuit": "30-11111111-1"},
             },
         ),
         patch(
@@ -86,7 +86,7 @@ async def test_community_provider_enforces_public_evidence_fields() -> None:
             return_value=[
                 {
                     "pattern_id": "debtor_contracts",
-                    "cnpj": "11.111.111/0001-11",
+                    "cuit": "30-11111111-1",
                     "company_name": "Empresa Teste",
                     "amount_total": 1000.0,
                     "window_start": "2024-01-01",

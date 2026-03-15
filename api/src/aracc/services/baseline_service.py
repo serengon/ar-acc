@@ -21,7 +21,7 @@ def _record_to_metrics(
 
     return BaselineMetrics(
         company_name=data.get("company_name", ""),
-        company_cnpj=data.get("company_cnpj", ""),
+        company_cuit=data.get("company_cuit", ""),
         company_id=data.get("company_id", ""),
         contract_count=int(data.get("contract_count", 0)),
         total_value=float(data.get("total_value", 0)),

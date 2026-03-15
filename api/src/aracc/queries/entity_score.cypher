@@ -27,9 +27,9 @@ WITH e, lbls, equivs,
          WHEN connected:Convenio THEN 'transferegov'
          WHEN connected:LaborStats THEN 'rais'
          WHEN connected:Amendment THEN 'transparencia'
-         WHEN connected:Company THEN 'cnpj'
-         WHEN connected:Person THEN 'cnpj'
-         ELSE 'cnpj'
+         WHEN connected:Company THEN 'cuit'
+         WHEN connected:Person THEN 'cuil'
+         ELSE 'cuit'
        END
      ) AS source_list
 // Contract volume across all equivalents

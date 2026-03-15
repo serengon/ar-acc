@@ -20,7 +20,7 @@ WITH cnae, co, contract_count, total_value,
      toFloat(sector_total_value) / CASE WHEN sector_companies > 0
        THEN toFloat(sector_companies) ELSE 1.0 END AS avg_value
 RETURN co.razao_social AS company_name,
-       co.cnpj AS company_cnpj,
+       co.cuit AS company_cuit,
        elementId(co) AS company_id,
        cnae AS sector_cnae,
        contract_count,

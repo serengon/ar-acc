@@ -1,6 +1,6 @@
 MATCH (u:User {id: $user_id})-[:OWNS]->(i:Investigation {id: $investigation_id})
 MATCH (i)-[r:INCLUDES]->(e)
-WHERE (e.cpf = $entity_id OR e.cnpj = $entity_id
+WHERE (e.cuil = $entity_id OR e.cuit = $entity_id
    OR e.contract_id = $entity_id OR e.sanction_id = $entity_id
    OR e.amendment_id = $entity_id OR e.cnes_code = $entity_id
    OR e.finance_id = $entity_id OR e.embargo_id = $entity_id

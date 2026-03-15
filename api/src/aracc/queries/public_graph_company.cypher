@@ -1,7 +1,7 @@
 MATCH (center:Company)
 WHERE elementId(center) = $company_id
-   OR center.cnpj = $company_identifier
-   OR center.cnpj = $company_identifier_formatted
+   OR center.cuit = $company_identifier
+   OR center.cuit = $company_identifier_formatted
 OPTIONAL MATCH p=(center)-[:SOCIO_DE|VENCEU|SANCIONADA|DEVE|RECEBEU_EMPRESTIMO|BENEFICIOU|GEROU_CONVENIO|MUNICIPAL_VENCEU|MUNICIPAL_LICITOU*1..4]-(n)
 WHERE length(p) <= $depth
   AND all(

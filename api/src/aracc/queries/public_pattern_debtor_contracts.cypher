@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 CALL {
   WITH c
   MATCH (c)-[:DEVE]->(debt:Finance)
@@ -53,7 +53,7 @@ WHERE size(debt_ids) > 0
   AND size(contract_ids) > 0
   AND size(evidence_refs) > 0
 RETURN 'debtor_contracts' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(size(debt_ids) + size(contract_ids)) AS risk_signal,
        amount_total AS amount_total,

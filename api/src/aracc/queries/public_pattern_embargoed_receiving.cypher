@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 CALL {
   WITH c
   MATCH (c)-[:EMBARGADA]->(emb:Embargo)
@@ -72,7 +72,7 @@ WHERE size(embargo_ids) > 0
   AND (size(contract_ids) > 0 OR size(loan_ids) > 0)
   AND size(evidence_refs) > 0
 RETURN 'embargoed_receiving' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(size(embargo_ids) + size(contract_ids) + size(loan_ids)) AS risk_signal,
        amount_total AS amount_total,

@@ -15,7 +15,7 @@ class EmendaPayment(BaseModel):
 
 
 class EmendaBeneficiary(BaseModel):
-    cnpj: str
+    cuit: str
     razao_social: str | None = None
 
 

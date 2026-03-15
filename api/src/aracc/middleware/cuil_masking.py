@@ -1,7 +1,9 @@
-"""Middleware that masks CPF numbers in API responses to protect personal data.
+"""Middleware that masks CUIL/CUIT numbers in API responses to protect personal data.
 
-CPF (Cadastro de Pessoa Fisica) is an 11-digit Brazilian tax ID.
-Politically Exposed Persons (PEPs) have their CPFs kept visible.
+CUIL (Clave Unica de Identificacion Laboral) is an 11-digit Argentine tax ID for persons.
+CUIT (Clave Unica de Identificacion Tributaria) is an 11-digit Argentine tax ID for companies.
+Both share the format: XX-XXXXXXXX-X.
+Politically Exposed Persons (PEPs) have their CUILs kept visible.
 """
 
 from __future__ import annotations
@@ -19,27 +21,26 @@ if TYPE_CHECKING:
     from starlette.middleware.base import RequestResponseEndpoint
     from starlette.requests import Request
 
-# Matches 11-digit CPF in formatted (123.456.789-00) or raw (12345678900) form.
-# Uses negative lookbehind/lookahead to avoid matching inside longer digit sequences
-# (e.g. 14-digit CNPJ).
-_CPF_FORMATTED = re.compile(r"\d{3}\.\d{3}\.\d{3}-\d{2}")
-_CPF_RAW = re.compile(r"(?<!\d)\d{11}(?!\d)")
+# Matches 11-digit CUIL/CUIT in formatted (XX-XXXXXXXX-X) or raw (XXXXXXXXXXX) form.
+# Uses negative lookbehind/lookahead to avoid matching inside longer digit sequences.
+_CUIL_FORMATTED = re.compile(r"\d{2}-\d{8}-\d")
+_CUIL_RAW = re.compile(r"(?<!\d)\d{11}(?!\d)")
 
 
-def mask_formatted_cpf(cpf: str) -> str:
-    """Mask a formatted CPF, keeping only the last 4 visible digits.
+def mask_formatted_cuil(cuil: str) -> str:
+    """Mask a formatted CUIL/CUIT, keeping only the last 4 visible digits.
 
-    Example: 123.456.789-00 -> ***.***.789-00
+    Example: 20-12345678-9 -> **-*****678-9
     """
-    return f"***.***.{cpf[8:]}"
+    return f"**-*****{cuil[8:]}"
 
 
-def mask_raw_cpf(cpf: str) -> str:
-    """Mask a raw 11-digit CPF, keeping only the last 4 digits.
+def mask_raw_cuil(cuil: str) -> str:
+    """Mask a raw 11-digit CUIL/CUIT, keeping only the last 4 digits.
 
-    Example: 12345678900 -> *******8900
+    Example: 20123456789 -> *******6789
     """
-    return f"*******{cpf[7:]}"
+    return f"*******{cuil[7:]}"
 
 
 def _is_pep_record(record: dict[str, Any]) -> bool:
@@ -59,55 +60,54 @@ def _is_pep_record(record: dict[str, Any]) -> bool:
     return False
 
 
-def _collect_pep_cpfs(data: Any) -> set[str]:
-    """Walk a JSON structure and return the set of CPF strings belonging to PEPs."""
-    pep_cpfs: set[str] = set()
+def _collect_pep_cuils(data: Any) -> set[str]:
+    """Walk a JSON structure and return the set of CUIL/CUIT strings belonging to PEPs."""
+    pep_cuils: set[str] = set()
 
     if isinstance(data, dict):
         if _is_pep_record(data):
-            cpf_val = data.get("cpf")
-            if isinstance(cpf_val, str) and cpf_val:
-                # Normalise to digits-only for comparison.
-                pep_cpfs.add(re.sub(r"\D", "", cpf_val))
+            for field in ("cuil", "cuit"):
+                cuil_val = data.get(field)
+                if isinstance(cuil_val, str) and cuil_val:
+                    # Normalise to digits-only for comparison.
+                    pep_cuils.add(re.sub(r"\D", "", cuil_val))
         for value in data.values():
-            pep_cpfs |= _collect_pep_cpfs(value)
+            pep_cuils |= _collect_pep_cuils(value)
     elif isinstance(data, list):
         for item in data:
-            pep_cpfs |= _collect_pep_cpfs(item)
+            pep_cuils |= _collect_pep_cuils(item)
 
-    return pep_cpfs
-
-
-def _digits_only(cpf: str) -> str:
-    return re.sub(r"\D", "", cpf)
+    return pep_cuils
 
 
-def mask_cpfs_in_json(text: str, pep_cpfs: set[str] | None = None) -> str:
-    """Replace CPF patterns in *text* with masked versions.
+def _digits_only(cuil: str) -> str:
+    return re.sub(r"\D", "", cuil)
 
-    CPFs whose digits-only form appears in *pep_cpfs* are left untouched.
-    CNPJ (14-digit) numbers are never touched because the regex only
-    matches exactly 11 contiguous digits.
+
+def mask_cuils_in_json(text: str, pep_cuils: set[str] | None = None) -> str:
+    """Replace CUIL/CUIT patterns in *text* with masked versions.
+
+    CUILs/CUITs whose digits-only form appears in *pep_cuils* are left untouched.
     """
-    safe: set[str] = pep_cpfs or set()
+    safe: set[str] = pep_cuils or set()
 
     def _replace_formatted(m: re.Match[str]) -> str:
         if _digits_only(m.group()) in safe:
             return m.group()
-        return mask_formatted_cpf(m.group())
+        return mask_formatted_cuil(m.group())
 
     def _replace_raw(m: re.Match[str]) -> str:
         if m.group() in safe:
             return m.group()
-        return mask_raw_cpf(m.group())
+        return mask_raw_cuil(m.group())
 
-    text = _CPF_FORMATTED.sub(_replace_formatted, text)
-    text = _CPF_RAW.sub(_replace_raw, text)
+    text = _CUIL_FORMATTED.sub(_replace_formatted, text)
+    text = _CUIL_RAW.sub(_replace_raw, text)
     return text
 
 
-class CPFMaskingMiddleware(BaseHTTPMiddleware):
-    """Starlette middleware that masks CPF numbers in JSON responses."""
+class CUILMaskingMiddleware(BaseHTTPMiddleware):
+    """Starlette middleware that masks CUIL/CUIT numbers in JSON responses."""
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -138,15 +138,15 @@ class CPFMaskingMiddleware(BaseHTTPMiddleware):
 
         body_text = body_bytes.decode("utf-8")
 
-        # Parse JSON to discover PEP CPFs, then mask the rest.
-        pep_cpfs: set[str] = set()
+        # Parse JSON to discover PEP CUILs, then mask the rest.
+        pep_cuils: set[str] = set()
         try:
             data = json.loads(body_text)
-            pep_cpfs = _collect_pep_cpfs(data)
+            pep_cuils = _collect_pep_cuils(data)
         except (json.JSONDecodeError, TypeError):
             pass
 
-        masked_text = mask_cpfs_in_json(body_text, pep_cpfs)
+        masked_text = mask_cuils_in_json(body_text, pep_cuils)
         masked_bytes = masked_text.encode("utf-8")
 
         return Response(

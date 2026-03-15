@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 MATCH (c)-[:VENCEU]->(ct:Contract)
 WHERE ct.value IS NOT NULL
   AND ct.value <= toFloat($pattern_split_threshold_value)
@@ -31,7 +31,7 @@ WITH c,
      reduce(flat = [], ids IN id_groups | flat + ids) AS evidence_refs
 WHERE size(evidence_refs) > 0
 RETURN 'split_contracts_below_threshold' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(grouped_occurrences + size(evidence_refs)) AS risk_signal,
        amount_total AS amount_total,

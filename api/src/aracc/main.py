@@ -10,7 +10,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from aracc.config import settings
 from aracc.dependencies import close_driver, init_driver
-from aracc.middleware.cpf_masking import CPFMaskingMiddleware
+from aracc.middleware.cuil_masking import CUILMaskingMiddleware
 from aracc.middleware.rate_limit import limiter
 from aracc.middleware.security_headers import SecurityHeadersMiddleware
 from aracc.routers import (
@@ -76,7 +76,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(SecurityHeadersMiddleware, app_env=settings.app_env)
-app.add_middleware(CPFMaskingMiddleware)
+app.add_middleware(CUILMaskingMiddleware)
 
 app.include_router(meta.router)
 app.include_router(public.router)

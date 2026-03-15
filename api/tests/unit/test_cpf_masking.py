@@ -1,4 +1,4 @@
-"""Tests for CPF masking middleware and helpers."""
+"""Tests for CUIL/CUIT masking middleware and helpers."""
 
 from __future__ import annotations
 
@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from aracc.middleware.cpf_masking import (
-    _collect_pep_cpfs,
+from aracc.middleware.cuil_masking import (
+    _collect_pep_cuils,
     _is_pep_record,
-    mask_cpfs_in_json,
-    mask_formatted_cpf,
-    mask_raw_cpf,
+    mask_cuils_in_json,
+    mask_formatted_cuil,
+    mask_raw_cuil,
 )
 
 if TYPE_CHECKING:
@@ -24,209 +24,205 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
-class TestMaskFormattedCPF:
+class TestMaskFormattedCUIL:
     def test_basic(self) -> None:
-        assert mask_formatted_cpf("123.456.789-00") == "***.***.789-00"
+        assert mask_formatted_cuil("20-12345678-9") == "**-*****678-9"
 
     def test_another(self) -> None:
-        assert mask_formatted_cpf("000.111.222-33") == "***.***.222-33"
+        assert mask_formatted_cuil("30-11122233-4") == "**-*****233-4"
 
 
-class TestMaskRawCPF:
+class TestMaskRawCUIL:
     def test_basic(self) -> None:
-        assert mask_raw_cpf("12345678900") == "*******8900"
+        assert mask_raw_cuil("20123456789") == "*******6789"
 
     def test_zeros(self) -> None:
-        assert mask_raw_cpf("00000000000") == "*******0000"
+        assert mask_raw_cuil("00000000000") == "*******0000"
 
 
 class TestIsPepRecord:
     def test_explicit_is_pep_true(self) -> None:
-        assert _is_pep_record({"name": "Joao", "cpf": "12345678900", "is_pep": True})
+        assert _is_pep_record({"name": "Juan", "cuil": "20123456789", "is_pep": True})
 
     def test_explicit_is_pep_false(self) -> None:
-        assert not _is_pep_record({"name": "Joao", "cpf": "12345678900", "is_pep": False})
+        assert not _is_pep_record({"name": "Juan", "cuil": "20123456789", "is_pep": False})
 
     @pytest.mark.parametrize(
         "role",
         [
-            "deputado",
+            "diputado",
             "senador",
-            "vereador",
-            "prefeito",
-            "governador",
+            "concejal",
+            "intendente",
+            "gobernador",
             "presidente",
             "ministro",
-            "Deputada",
+            "Diputada",
             "SENADORA",
             "Ministra",
+            "secretario",
+            "legislador",
         ],
     )
     def test_political_role(self, role: str) -> None:
-        assert _is_pep_record({"name": "X", "cpf": "11111111111", "role": role})
+        assert _is_pep_record({"name": "X", "cuil": "20111111111", "role": role})
 
     def test_cargo_field(self) -> None:
-        assert _is_pep_record({"name": "X", "cpf": "11111111111", "cargo": "Deputado"})
+        assert _is_pep_record({"name": "X", "cuil": "20111111111", "cargo": "Diputado"})
 
     @pytest.mark.parametrize(
         "role",
         [
-            "Deputado Federal",
-            "deputado federal",
-            "DEPUTADO FEDERAL",
-            "Senador da Republica",
-            "senadora da republica",
-            "Vereador Suplente",
+            "Diputado Nacional",
+            "diputado nacional",
+            "DIPUTADO NACIONAL",
+            "Senador de la Nacion",
+            "senadora de la nacion",
+            "Concejal Suplente",
             "Ministro de Estado",
-            "Governadora do Estado de Sao Paulo",
-            "Presidente da Republica",
+            "Gobernadora de la Provincia de Buenos Aires",
+            "Presidente de la Nacion",
+            "Jefe de Gobierno",
         ],
     )
     def test_compound_role_detected_as_pep(self, role: str) -> None:
-        """Compound PEP roles like 'deputado federal' must be detected via substring match."""
-        assert _is_pep_record({"name": "X", "cpf": "11111111111", "role": role})
+        """Compound PEP roles like 'diputado nacional' must be detected via substring match."""
+        assert _is_pep_record({"name": "X", "cuil": "20111111111", "role": role})
 
     def test_compound_cargo_detected_as_pep(self) -> None:
-        """Compound PEP cargo like 'Deputado Federal' must be detected via substring match."""
-        assert _is_pep_record({"name": "X", "cpf": "11111111111", "cargo": "Deputado Federal"})
+        """Compound PEP cargo like 'Diputado Nacional' must be detected via substring match."""
+        assert _is_pep_record({"name": "X", "cuil": "20111111111", "cargo": "Diputado Nacional"})
 
     def test_non_pep_role(self) -> None:
-        assert not _is_pep_record({"name": "X", "cpf": "11111111111", "role": "assessor"})
+        assert not _is_pep_record({"name": "X", "cuil": "20111111111", "role": "asesor"})
 
     def test_no_role_no_is_pep(self) -> None:
-        assert not _is_pep_record({"name": "X", "cpf": "11111111111"})
+        assert not _is_pep_record({"name": "X", "cuil": "20111111111"})
 
 
-class TestCollectPepCpfs:
+class TestCollectPepCuils:
     def test_flat_pep(self) -> None:
-        data = {"cpf": "123.456.789-00", "is_pep": True}
-        assert _collect_pep_cpfs(data) == {"12345678900"}
+        data = {"cuil": "20-12345678-9", "is_pep": True}
+        assert _collect_pep_cuils(data) == {"20123456789"}
 
     def test_flat_non_pep(self) -> None:
-        data = {"cpf": "123.456.789-00", "is_pep": False}
-        assert _collect_pep_cpfs(data) == set()
+        data = {"cuil": "20-12345678-9", "is_pep": False}
+        assert _collect_pep_cuils(data) == set()
 
     def test_nested_list(self) -> None:
         data = {
             "results": [
-                {"cpf": "11111111111", "role": "deputado"},
-                {"cpf": "22222222222", "role": "assessor"},
+                {"cuil": "20111111111", "role": "diputado"},
+                {"cuil": "20222222222", "role": "asesor"},
             ]
         }
-        peps = _collect_pep_cpfs(data)
-        assert "11111111111" in peps
-        assert "22222222222" not in peps
+        peps = _collect_pep_cuils(data)
+        assert "20111111111" in peps
+        assert "20222222222" not in peps
 
     def test_deeply_nested(self) -> None:
-        data = {"a": {"b": {"c": [{"cpf": "33333333333", "is_pep": True}]}}}
-        assert "33333333333" in _collect_pep_cpfs(data)
+        data = {"a": {"b": {"c": [{"cuil": "20333333333", "is_pep": True}]}}}
+        assert "20333333333" in _collect_pep_cuils(data)
 
     def test_compound_role_collected(self) -> None:
-        """Compound roles like 'Deputado Federal' must be recognized in the walk."""
+        """Compound roles like 'Diputado Nacional' must be recognized in the walk."""
         data = {
             "results": [
-                {"cpf": "11111111111", "role": "Deputado Federal"},
-                {"cpf": "22222222222", "role": "assessor parlamentar"},
+                {"cuil": "20111111111", "role": "Diputado Nacional"},
+                {"cuil": "20222222222", "role": "asesor parlamentario"},
             ]
         }
-        peps = _collect_pep_cpfs(data)
-        assert "11111111111" in peps
-        assert "22222222222" not in peps
+        peps = _collect_pep_cuils(data)
+        assert "20111111111" in peps
+        assert "20222222222" not in peps
+
+    def test_cuit_field_collected(self) -> None:
+        """CUIT field on PEP records must also be collected."""
+        data = {"cuit": "30111111111", "is_pep": True}
+        assert "30111111111" in _collect_pep_cuils(data)
 
 
 # ---------------------------------------------------------------------------
-# Unit tests for mask_cpfs_in_json
+# Unit tests for mask_cuils_in_json
 # ---------------------------------------------------------------------------
 
 
-class TestMaskCpfsInJson:
-    def test_formatted_cpf_masked(self) -> None:
-        text = '{"cpf": "123.456.789-00"}'
-        result = mask_cpfs_in_json(text)
-        assert "***.***.789-00" in result
-        assert "123.456" not in result
+class TestMaskCuilsInJson:
+    def test_formatted_cuil_masked(self) -> None:
+        text = '{"cuil": "20-12345678-9"}'
+        result = mask_cuils_in_json(text)
+        assert "**-*****678-9" in result
+        assert "20-12345" not in result
 
-    def test_raw_cpf_masked(self) -> None:
-        text = '{"cpf": "12345678900"}'
-        result = mask_cpfs_in_json(text)
-        assert "*******8900" in result
-        assert "1234567" not in result
+    def test_raw_cuil_masked(self) -> None:
+        text = '{"cuil": "20123456789"}'
+        result = mask_cuils_in_json(text)
+        assert "*******6789" in result
+        assert "2012345" not in result
 
-    def test_pep_cpf_not_masked(self) -> None:
-        text = '{"cpf": "12345678900"}'
-        result = mask_cpfs_in_json(text, pep_cpfs={"12345678900"})
-        assert "12345678900" in result
+    def test_pep_cuil_not_masked(self) -> None:
+        text = '{"cuil": "20123456789"}'
+        result = mask_cuils_in_json(text, pep_cuils={"20123456789"})
+        assert "20123456789" in result
 
-    def test_pep_formatted_cpf_not_masked(self) -> None:
-        text = '{"cpf": "123.456.789-00"}'
-        result = mask_cpfs_in_json(text, pep_cpfs={"12345678900"})
-        assert "123.456.789-00" in result
+    def test_pep_formatted_cuil_not_masked(self) -> None:
+        text = '{"cuil": "20-12345678-9"}'
+        result = mask_cuils_in_json(text, pep_cuils={"20123456789"})
+        assert "20-12345678-9" in result
 
-    def test_cnpj_not_masked(self) -> None:
-        """CNPJ has 14 digits and must never be masked."""
-        text = '{"cnpj": "12.345.678/0001-90"}'
-        result = mask_cpfs_in_json(text)
-        assert "12.345.678/0001-90" in result
-
-    def test_raw_cnpj_not_masked(self) -> None:
-        """Raw 14-digit CNPJ must not be matched by the 11-digit CPF regex."""
-        text = '{"cnpj": "12345678000190"}'
-        result = mask_cpfs_in_json(text)
-        assert "12345678000190" in result
-
-    def test_multiple_cpfs(self) -> None:
+    def test_multiple_cuils(self) -> None:
         text = json.dumps({
             "people": [
-                {"name": "A", "cpf": "111.222.333-44"},
-                {"name": "B", "cpf": "555.666.777-88"},
+                {"name": "A", "cuil": "20-11122233-4"},
+                {"name": "B", "cuil": "23-55566677-8"},
             ]
         })
-        result = mask_cpfs_in_json(text)
-        assert "***.***.333-44" in result
-        assert "***.***.777-88" in result
+        result = mask_cuils_in_json(text)
+        assert "**-*****233-4" in result
+        assert "**-*****677-8" in result
 
     def test_mixed_pep_and_non_pep(self) -> None:
         text = json.dumps({
             "people": [
-                {"name": "A", "cpf": "111.222.333-44"},
-                {"name": "B", "cpf": "555.666.777-88"},
+                {"name": "A", "cuil": "20-11122233-4"},
+                {"name": "B", "cuil": "23-55566677-8"},
             ]
         })
-        result = mask_cpfs_in_json(text, pep_cpfs={"11122233344"})
-        assert "111.222.333-44" in result  # PEP: not masked
-        assert "***.***.777-88" in result  # Non-PEP: masked
+        result = mask_cuils_in_json(text, pep_cuils={"20111222334"})
+        assert "20-11122233-4" in result  # PEP: not masked
+        assert "**-*****677-8" in result  # Non-PEP: masked
 
     def test_empty_string(self) -> None:
-        assert mask_cpfs_in_json("") == ""
+        assert mask_cuils_in_json("") == ""
 
-    def test_no_cpfs(self) -> None:
+    def test_no_cuils(self) -> None:
         text = '{"name": "hello"}'
-        assert mask_cpfs_in_json(text) == text
+        assert mask_cuils_in_json(text) == text
 
-    def test_null_cpf_value(self) -> None:
-        text = '{"cpf": null}'
-        assert mask_cpfs_in_json(text) == text
+    def test_null_cuil_value(self) -> None:
+        text = '{"cuil": null}'
+        assert mask_cuils_in_json(text) == text
 
-    def test_cpf_in_nested_json(self) -> None:
+    def test_cuil_in_nested_json(self) -> None:
         text = json.dumps({
             "entity": {
                 "details": {
-                    "personal": {"cpf": "987.654.321-00"}
+                    "personal": {"cuil": "20-98765432-1"}
                 }
             }
         })
-        result = mask_cpfs_in_json(text)
-        assert "***.***.321-00" in result
+        result = mask_cuils_in_json(text)
+        assert "**-*****432-1" in result
 
     def test_short_digit_sequence_not_masked(self) -> None:
-        """A 6-digit number should NOT be treated as CPF."""
+        """A 6-digit number should NOT be treated as CUIL."""
         text = '{"partial": "123456"}'
-        result = mask_cpfs_in_json(text)
+        result = mask_cuils_in_json(text)
         assert "123456" in result
 
     def test_non_json_text_passthrough(self) -> None:
-        text = "This is plain text with no CPFs."
-        assert mask_cpfs_in_json(text) == text
+        text = "This is plain text with no CUILs."
+        assert mask_cuils_in_json(text) == text
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +232,7 @@ class TestMaskCpfsInJson:
 
 @pytest.mark.anyio
 async def test_health_not_masked(client: AsyncClient) -> None:
-    """Non-CPF JSON responses pass through unchanged."""
+    """Non-CUIL JSON responses pass through unchanged."""
     resp = await client.get("/health")
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok"}

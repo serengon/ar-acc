@@ -1,7 +1,7 @@
 MATCH (c:Company)
 WHERE elementId(c) = $company_id
-   OR c.cnpj = $company_identifier
-   OR c.cnpj = $company_identifier_formatted
+   OR c.cuit = $company_identifier
+   OR c.cuit = $company_identifier_formatted
 MATCH (c)-[:VENCEU]->(ct:Contract)
 WHERE ct.contracting_org IS NOT NULL
   AND trim(ct.contracting_org) <> ''
@@ -35,7 +35,7 @@ WITH c,
      [x IN contract_ids WHERE x IS NOT NULL AND x <> ''] AS evidence_refs
 WHERE size(evidence_refs) > 0
 RETURN 'contract_concentration' AS pattern_id,
-       c.cnpj AS cnpj,
+       c.cuit AS cuit,
        c.razao_social AS company_name,
        toFloat(size(risky_orgs) + size(evidence_refs)) AS risk_signal,
        amount_total AS amount_total,

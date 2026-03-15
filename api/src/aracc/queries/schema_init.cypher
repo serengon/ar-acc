@@ -2,14 +2,14 @@
 // Applied on database initialization
 
 // ── Uniqueness Constraints ──────────────────────────────
-CREATE CONSTRAINT person_cpf_unique IF NOT EXISTS
-  FOR (p:Person) REQUIRE p.cpf IS UNIQUE;
+CREATE CONSTRAINT person_cuil_unique IF NOT EXISTS
+  FOR (p:Person) REQUIRE p.cuil IS UNIQUE;
 
 CREATE CONSTRAINT partner_id_unique IF NOT EXISTS
   FOR (p:Partner) REQUIRE p.partner_id IS UNIQUE;
 
-CREATE CONSTRAINT company_cnpj_unique IF NOT EXISTS
-  FOR (c:Company) REQUIRE c.cnpj IS UNIQUE;
+CREATE CONSTRAINT company_cuit_unique IF NOT EXISTS
+  FOR (c:Company) REQUIRE c.cuit IS UNIQUE;
 
 CREATE CONSTRAINT contract_contract_id_unique IF NOT EXISTS
   FOR (c:Contract) REQUIRE c.contract_id IS UNIQUE;
@@ -87,11 +87,11 @@ CREATE INDEX person_author_key IF NOT EXISTS
 CREATE INDEX person_sq_candidato IF NOT EXISTS
   FOR (p:Person) ON (p.sq_candidato);
 
-CREATE INDEX person_cpf_middle6 IF NOT EXISTS
-  FOR (p:Person) ON (p.cpf_middle6);
+CREATE INDEX person_cuil_middle6 IF NOT EXISTS
+  FOR (p:Person) ON (p.cuil_middle6);
 
-CREATE INDEX person_cpf_partial IF NOT EXISTS
-  FOR (p:Person) ON (p.cpf_partial);
+CREATE INDEX person_cuil_partial IF NOT EXISTS
+  FOR (p:Person) ON (p.cuil_partial);
 
 CREATE INDEX partner_name IF NOT EXISTS
   FOR (p:Partner) ON (p.name);
@@ -251,7 +251,7 @@ CREATE INDEX socio_snapshot_date IF NOT EXISTS
 // ── Fulltext Search Index ───────────────────────────────
 CREATE FULLTEXT INDEX entity_search IF NOT EXISTS
   FOR (n:Person|Partner|Company|Health|Education|Contract|Amendment|Convenio|Embargo|PublicOffice|Inquiry|InquiryRequirement|MunicipalContract|MunicipalBid|MunicipalGazetteAct|JudicialCase|SourceDocument)
-  ON EACH [n.name, n.razao_social, n.cpf, n.cnpj, n.doc_partial, n.doc_raw, n.cnes_code, n.object, n.contracting_org, n.convenente, n.infraction, n.org, n.function, n.subject, n.text, n.topic, n.case_number, n.url];
+  ON EACH [n.name, n.razao_social, n.cuil, n.cuit, n.doc_partial, n.doc_raw, n.cnes_code, n.object, n.contracting_org, n.convenente, n.infraction, n.org, n.function, n.subject, n.text, n.topic, n.case_number, n.url];
 
 // ── User Constraints ────────────────────────────────────
 CREATE CONSTRAINT user_email_unique IF NOT EXISTS
