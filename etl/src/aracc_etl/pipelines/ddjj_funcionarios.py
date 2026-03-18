@@ -155,7 +155,7 @@ class DdjjFuncionariosPipeline(Pipeline):
         # dj_id already exists in the CSV
         tipo_col = "tipo_declaracion_jurada_id"
         df_decl["tipo"] = df_decl[tipo_col].apply(
-            lambda x: _TIPO_DJ.get(int(x), x) if x else None
+            lambda x: _TIPO_DJ.get(int(float(x)), x) if x else None
         )
 
         money_cols = [
