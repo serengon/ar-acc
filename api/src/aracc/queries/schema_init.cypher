@@ -77,6 +77,9 @@ CREATE CONSTRAINT ingestion_run_id_unique IF NOT EXISTS
 CREATE CONSTRAINT temporal_violation_id_unique IF NOT EXISTS
   FOR (t:TemporalViolation) REQUIRE t.violation_id IS UNIQUE;
 
+CREATE CONSTRAINT boletin_document_id_unique IF NOT EXISTS
+  FOR (b:BoletinDocument) REQUIRE b.doc_id IS UNIQUE;
+
 // ── Indexes ─────────────────────────────────────────────
 CREATE INDEX person_name IF NOT EXISTS
   FOR (p:Person) ON (p.name);
@@ -250,8 +253,8 @@ CREATE INDEX socio_snapshot_date IF NOT EXISTS
 
 // ── Fulltext Search Index ───────────────────────────────
 CREATE FULLTEXT INDEX entity_search IF NOT EXISTS
-  FOR (n:Person|Partner|Company|Health|Education|Contract|Amendment|Convenio|Embargo|PublicOffice|Inquiry|InquiryRequirement|MunicipalContract|MunicipalBid|MunicipalGazetteAct|JudicialCase|SourceDocument)
-  ON EACH [n.name, n.razao_social, n.cuil, n.cuit, n.doc_partial, n.doc_raw, n.cnes_code, n.object, n.contracting_org, n.convenente, n.infraction, n.org, n.function, n.subject, n.text, n.topic, n.case_number, n.url];
+  FOR (n:Person|Partner|Company|Health|Education|Contract|Amendment|Convenio|Embargo|PublicOffice|Inquiry|InquiryRequirement|MunicipalContract|MunicipalBid|MunicipalGazetteAct|JudicialCase|SourceDocument|BoletinDocument)
+  ON EACH [n.name, n.razao_social, n.cuil, n.cuit, n.doc_partial, n.doc_raw, n.cnes_code, n.object, n.contracting_org, n.convenente, n.infraction, n.org, n.function, n.subject, n.text, n.topic, n.case_number, n.url, n.title, n.body, n.category];
 
 // ── User Constraints ────────────────────────────────────
 CREATE CONSTRAINT user_email_unique IF NOT EXISTS

@@ -197,7 +197,8 @@
     "declaration": "Declaración Jurada",
     "declaredasset": "Bien Declarado",
     "declareddebt": "Deuda Declarada",
-    "detail": "Detalle de Entidad"
+    "detail": "Detalle de Entidad",
+    "boletinDocument": "Documento del Boletín"
   },
   "relationship": {
     "SOCIO_DE": "Socio de",
