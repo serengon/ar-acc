@@ -3,42 +3,87 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
       id-token: write
+      actions: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: |
+          cd api && uv sync --dev
+          cd ../etl && uv sync --dev
+          cd ../frontend && npm ci
 
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
-          plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
+          additional_permissions: |
+            actions: read
+          allowed_tools: |
+            Bash(cd api && uv run ruff check src/ tests/)
+            Bash(cd etl && uv run ruff check src/ tests/)
+            Bash(cd frontend && npm run lint)
+            Bash(cd api && uv run mypy src/)
+            Bash(cd etl && uv run mypy src/)
+            Bash(cd frontend && npm run type-check)
+            Bash(cd api && uv run pytest *)
+            Bash(cd etl && uv run pytest *)
+            Bash(cd frontend && npx vitest run *)
+          prompt: |
+            Revisá este PR como reviewer experto del proyecto ar/acc.
+
+            ## Contexto del proyecto
+            - Monorepo: api/ (FastAPI + Neo4j), etl/ (pipelines Python), frontend/ (React + Vite + TypeScript)
+            - Base de datos: Neo4j 5. Claves primarias: CUIL (personas) y CUIT (empresas)
+            - Python usa uv, ruff, mypy. Frontend usa npm, eslint, tsc, vitest.
+            - Conventional commits: type(scope): descripción. Scopes: etl, api, frontend, infra, ci.
+            - PRs van a develop (excepto hotfix → main)
+
+            ## Qué revisar
+            1. **Corré los quality checks** (lint, type-check, tests) para los componentes que el PR modifica. Reportá si fallan.
+            2. **Leé todo el diff** y los archivos relevantes del codebase para entender el contexto.
+            3. **Revisá**:
+               - Bugs, errores lógicos, edge cases no manejados
+               - Seguridad (injection, XSS, secrets, OWASP top 10)
+               - Consistencia con patrones existentes (base classes, Neo4j schema, Cypher queries, frontend stores)
+               - Si se agregan nodos/relaciones a Neo4j: verificar que se actualicen constraints, indexes, fulltext index, queries Cypher (entity_by_id, entity_connections, graph_expand, investigation_add/remove), frontend stores (INITIAL_ENTITY_TYPES, INITIAL_REL_TYPES), i18n translations
+               - Test coverage para lógica nueva
+               - Datetimes timezone-aware, no naive
+               - Variables de entorno: secretos nunca en VITE_*, auth siempre en HttpOnly cookies
+            4. **No revisar**: estilo de código (ruff/eslint se encargan), documentación obvia, convenciones genéricas.
+
+            ## Formato de respuesta
+            Respondé en español con esta estructura:
+            - **Resumen**: Qué hace el PR (2-3 líneas)
+            - **Checks**: Resultado de lint/type-check/tests
+            - **Issues**: Listados como Crítico/Mayor/Menor con referencia a archivo:línea
+            - **Veredicto**: APPROVE, REQUEST CHANGES, o COMMENT con justificación breve
 
