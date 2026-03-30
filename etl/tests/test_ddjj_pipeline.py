@@ -53,6 +53,37 @@ class TestParseDashDecimal:
 
 
 # ---------------------------------------------------------------------------
+# parse_tipo_dj (int(float(x)) regression)
+# ---------------------------------------------------------------------------
+
+
+class TestParseTipoDJ:
+    """Regression tests for the int(float(x)) pattern used to look up _TIPO_DJ."""
+
+    def _parse(self, value: str) -> str | None:
+        from aracc_etl.pipelines.ddjj_funcionarios import _TIPO_DJ
+        return _TIPO_DJ.get(int(float(value)), value) if value else None
+
+    def test_zero_float_string(self) -> None:
+        assert self._parse("0.00") == "Inicial"
+
+    def test_one_float_string(self) -> None:
+        assert self._parse("1.00") == "Anual"
+
+    def test_two_float_string(self) -> None:
+        assert self._parse("2.00") == "Baja"
+
+    def test_zero_int_string(self) -> None:
+        assert self._parse("0") == "Inicial"
+
+    def test_one_int_string(self) -> None:
+        assert self._parse("1") == "Anual"
+
+    def test_unknown_falls_back_to_value(self) -> None:
+        assert self._parse("99.00") == "99.00"
+
+
+# ---------------------------------------------------------------------------
 # CSV fixture loading
 # ---------------------------------------------------------------------------
 
