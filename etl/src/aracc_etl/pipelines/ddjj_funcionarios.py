@@ -144,10 +144,10 @@ class DdjjFuncionariosPipeline(Pipeline):
         # --- Persons ---
         persons_decl = df_decl[["cuit_fmt", "funcionario_apellido_nombre"]].copy()
         persons_decl = persons_decl.rename(columns={"cuit_fmt": "cuil"})
-        persons_decl["name"] = persons_decl["funcionario_apellido_nombre"].apply(
+        persons_decl["nombre"] = persons_decl["funcionario_apellido_nombre"].apply(
             normalize_name
         )
-        persons_decl = persons_decl[["cuil", "name"]].drop_duplicates(subset=["cuil"])
+        persons_decl = persons_decl[["cuil", "nombre"]].drop_duplicates(subset=["cuil"])
         persons_decl["source"] = "ddjj_funcionarios"
         self.df_persons = persons_decl[persons_decl["cuil"].str.len() > 0]
 

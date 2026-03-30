@@ -1,4 +1,4 @@
- cuit, nombres, apellido, tipo_deuda, sub_tipo_deuda, lugar_radicacion_pais, lugar_radicacion_provincia, descripcion, valor_moneda, monto, porcentaje_titularidad, periodo_inicio_cierre, desde
-20-12345678-9, JUAN CARLOS, GARCIA, Hipotecaria, Credito hipotecario, Argentina, Buenos Aires, Hipoteca Banco Nacion, ARS, 1200000.00, 100.0, I, 202401
-27-98765432-1, MARIA ELENA, LOPEZ, Prendaria, Credito prendario, Argentina, CABA, Prenda automotor, ARS, 500000.00, 100.0, C, 202401
-23-45678901-2, PEDRO ANTONIO, MARTINEZ, Comun, Tarjeta de credito, Argentina, Cordoba, Visa Banco Galicia, ARS, 150000.00, 100.0, I, 202401
+ cuit, dj_id, nombres, apellido, tipo_deuda, sub_tipo_deuda, lugar_radicacion_pais, lugar_radicacion_provincia, descripcion, valor_moneda, monto, porcentaje_titularidad, periodo_inicio_cierre, desde
+20-12345678-9, 20-12345678-9_202401_I, JUAN CARLOS, GARCIA, Hipotecaria, Credito hipotecario, Argentina, Buenos Aires, Hipoteca Banco Nacion, ARS, 1200000.00, 100.0, I, 202401
+27-98765432-1, 27-98765432-1_202401_C, MARIA ELENA, LOPEZ, Prendaria, Credito prendario, Argentina, CABA, Prenda automotor, ARS, 500000.00, 100.0, C, 202401
+23-45678901-2, 23-45678901-2_202401_I, PEDRO ANTONIO, MARTINEZ, Comun, Tarjeta de credito, Argentina, Cordoba, Visa Banco Galicia, ARS, 150000.00, 100.0, I, 202401
