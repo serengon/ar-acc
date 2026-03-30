@@ -37,6 +37,7 @@ export const dataColors = {
   declaration: "#F59E0B",
   declaredDebt: "#EF4444",
   publicOffice: "#6366F1",
+  boletinDocument: "#94a3b8",
 } as const;
 
 export type DataEntityType = keyof typeof dataColors;
@@ -143,6 +144,7 @@ export const entityColors: Record<string, string> = {
   declaredasset: "#7C3AED",
   declareddebt: "#EF4444",
   publicoffice: "#6366F1",
+  boletindocument: "#94a3b8",
 };
 
 export type EntityType = keyof typeof entityColors;
